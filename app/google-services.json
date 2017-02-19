@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "272472599300",
+    "firebase_url": "https://my-timesheet-2fcde.firebaseio.com",
+    "project_id": "my-timesheet-2fcde",
+    "storage_bucket": "my-timesheet-2fcde.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:272472599300:android:4c2b0ac96f71d4a9",
+        "android_client_info": {
+          "package_name": "com.weijie.timesheetapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "272472599300-1hdikhkjt8n7llc9b9bpkqc6dov3kgi2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.weijie.timesheetapp",
+            "certificate_hash": "69A5C7D9CBCD7DBF5A3B8132A503234FC8B3C9D5"
+          }
+        },
+        {
+          "client_id": "272472599300-52nger4cfmalgnbj82uv6lbp4nkebdtl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGLCFAjeMnwhkGORD9NvlsfA_ZzhwY85s"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "272472599300-52nger4cfmalgnbj82uv6lbp4nkebdtl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

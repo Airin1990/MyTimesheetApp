@@ -2,19 +2,28 @@ package com.weijie.timesheetapp;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
+import com.facebook.Profile;
+import com.facebook.login.widget.ProfilePictureView;
 
 public class HomepageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    Profile profile;
+    TextView username_tv;
+    ProfilePictureView userPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +49,16 @@ public class HomepageActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View hView = navigationView.getHeaderView(0);
+
+        String name = getIntent().getStringExtra("user_name");
+        String id = getIntent().getStringExtra("user_id");
+        Log.v("facebook", name + id);
+        username_tv = (TextView) hView.findViewById(R.id.user_tv);
+        username_tv.setText(name);
+        userPic = (ProfilePictureView) hView.findViewById(R.id.profile_pic_view);
+        userPic.setProfileId(id);
+
     }
 
     @Override
