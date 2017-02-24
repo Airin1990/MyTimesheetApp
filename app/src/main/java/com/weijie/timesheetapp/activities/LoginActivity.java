@@ -1,4 +1,4 @@
-package com.weijie.timesheetapp;
+package com.weijie.timesheetapp.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -39,6 +39,7 @@ import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.weijie.timesheetapp.R;
 
 import java.util.ArrayList;
 import java.util.List;

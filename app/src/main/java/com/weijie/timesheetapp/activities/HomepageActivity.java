@@ -1,4 +1,4 @@
-package com.weijie.timesheetapp;
+package com.weijie.timesheetapp.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.facebook.Profile;
 import com.facebook.login.widget.ProfilePictureView;
+import com.weijie.timesheetapp.R;
 
 public class HomepageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
