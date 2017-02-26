@@ -21,7 +21,8 @@ public final class TSContract {
     public static final String PATH_SHARE = "shares";
 
     // Default constructor
-    private TSContract() {}
+    private TSContract() {
+    }
 
     // Content provider for general timesheet
     public static final class TSEntry {
