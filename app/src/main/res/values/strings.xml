@@ -21,4 +21,15 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="title_activity_timesheet">TimesheetActivity</string>
+
+    <!-- Spinner entries-->
+    <string-array name="order_array">
+        <item>Date</item>
+        <item>Start Time</item>
+        <item>End Time</item>
+        <item>Break</item>
+        <item>Work Time</item>
+    </string-array>
+    <string name="title_activity_editor">EditorActivity</string>
 </resources>

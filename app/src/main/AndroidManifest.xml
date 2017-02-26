@@ -14,36 +14,51 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
         <activity
             android:name=".activities.SplashActivity"
-            android:theme="@style/Theme.Design.Light.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
+            android:theme="@style/Theme.Design.Light.NoActionBar"></activity>
         <activity
             android:name=".activities.LoginActivity"
             android:configChanges="keyboardHidden|orientation|keyboard|screenSize|screenLayout"
-            android:label="@string/title_activity_login"></activity>
-
+            android:label="@string/title_activity_login" />
         <activity
             android:name=".activities.HomepageActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <provider
             android:name=".database.TSContentProvider"
             android:authorities="com.weijie.timesheetapp"
             android:exported="false" />
 
+        <activity
+            android:name=".activities.TimesheetActivity"
+            android:label="@string/title_activity_timesheet"
+            android:parentActivityName=".activities.HomepageActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.weijie.timesheetapp.activities.HomepageActivity" />
+        </activity>
+        <activity
+            android:name=".activities.EditorActivity"
+            android:label="@string/title_activity_editor"
+            android:parentActivityName=".activities.TimesheetActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.weijie.timesheetapp.activities.TimesheetActivity" />
+        </activity>
     </application>
 
 </manifest>
