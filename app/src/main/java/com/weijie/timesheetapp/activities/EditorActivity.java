@@ -1,30 +1,43 @@
 package com.weijie.timesheetapp.activities;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.weijie.timesheetapp.R;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
-public class EditorActivity extends AppCompatActivity {
+public class EditorActivity extends AppCompatActivity implements View.OnClickListener {
 
     EditText date;
     EditText start_time;
     EditText end_time;
     EditText break_time;
     EditText work_time;
+    Button button;
     EditText comments;
+
+    DatePickerDialog mDatePicker;
+    TimePickerDialog mTimePicker;
+    private SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+    private SimpleDateFormat tf = new SimpleDateFormat("HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +61,7 @@ public class EditorActivity extends AppCompatActivity {
         end_time = (EditText) findViewById(R.id.et_edit);
         break_time = (EditText) findViewById(R.id.b_edit);
         work_time = (EditText) findViewById(R.id.wt_edit);
+        button = (Button) findViewById(R.id.cal_button);
         comments = (EditText) findViewById(R.id.comment_edit);
 
         populateDefaultValue();
@@ -55,31 +69,162 @@ public class EditorActivity extends AppCompatActivity {
     }
 
     private void populateDefaultValue() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
         date.setText(df.format(new Date()));
-        date.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Calendar mcurrentDate=Calendar.getInstance();
-                int mYear=mcurrentDate.get(Calendar.YEAR);
-                int mMonth=mcurrentDate.get(Calendar.MONTH);
-                int mDay=mcurrentDate.get(Calendar.DAY_OF_MONTH);
-
-                DatePickerDialog mDatePicker=new DatePickerDialog(getApplicationContext(), new DatePickerDialog.OnDateSetListener() {
-                    public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
-                        mcurrentDate.set(Calendar.YEAR, selectedyear);
-                        mcurrentDate.set(Calendar.MONTH, selectedmonth);
-                        mcurrentDate.set(Calendar.DAY_OF_MONTH, selectedday);
-                        String myFormat = "yyyy/MM/dd"; //In which you need put here
-                        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.UK);
-
-                        date.setText(sdf.format(mcurrentDate.getTime()));
-                    }
-                },mYear, mMonth, mDay);
-                mDatePicker.setTitle("Select date");
-                mDatePicker.show();
-            }
-        });
+        date.setInputType(InputType.TYPE_NULL);
+        date.setOnClickListener(this);
+        start_time.setText("8:00");
+        start_time.setInputType(InputType.TYPE_NULL);
+        start_time.setOnClickListener(this);
+        end_time.setText("17:00");
+        end_time.setInputType(InputType.TYPE_NULL);
+        end_time.setOnClickListener(this);
+        break_time.setText("1:00");
+        break_time.setInputType(InputType.TYPE_NULL);
+        break_time.setOnClickListener(this);
+        work_time.setEnabled(false);
+        button.setOnClickListener(this);
     }
 
+    @Override
+    public void onClick(View view) {
+
+        int id = view.getId();
+        Date sTime = new Date();
+        Calendar mTime = Calendar.getInstance();
+        int mHour;
+        int mMin;
+        switch(id) {
+            case R.id.date_edit:
+                Date curDate = new Date();
+                try {
+                    curDate = df.parse(date.getText().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Calendar mcurrentDate = Calendar.getInstance();
+                mcurrentDate.setTime(curDate);
+                int mYear = mcurrentDate.get(Calendar.YEAR);
+                int mMonth = mcurrentDate.get(Calendar.MONTH);
+                int mDay = mcurrentDate.get(Calendar.DAY_OF_MONTH);
+
+                mDatePicker = new DatePickerDialog(this,AlertDialog.THEME_HOLO_LIGHT, new DatePickerDialog.OnDateSetListener() {
+                    public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
+                        Calendar newDate = Calendar.getInstance();
+                        newDate.set(selectedyear,selectedmonth,selectedday);
+                        date.setText(df.format(newDate.getTime()));
+                    }
+                }, mYear, mMonth, mDay);
+                mDatePicker.setTitle("Select date");
+                mDatePicker.show();
+                break;
+            case R.id.st_edit:
+                try {
+                    sTime = tf.parse(start_time.getText().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                mTime.setTime(sTime);
+                mHour = mTime.get(Calendar.HOUR_OF_DAY);
+                mMin = mTime.get(Calendar.MINUTE);
+
+                mTimePicker = new TimePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT,new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                        Calendar newDate = Calendar.getInstance();
+                        newDate.set(Calendar.HOUR_OF_DAY, hour);
+                        newDate.set(Calendar.MINUTE, minute);
+                        start_time.setText(tf.format(newDate.getTime()));
+                    }
+                }, mHour, mMin, true);
+                mTimePicker.setTitle("Select start time");
+                mTimePicker.show();
+                break;
+            case R.id.et_edit:
+                try {
+                    sTime = tf.parse(end_time.getText().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                mTime.setTime(sTime);
+                mHour = mTime.get(Calendar.HOUR_OF_DAY);
+                mMin = mTime.get(Calendar.MINUTE);
+
+                mTimePicker = new TimePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT,new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                        Calendar newDate = Calendar.getInstance();
+                        newDate.set(Calendar.HOUR_OF_DAY, hour);
+                        newDate.set(Calendar.MINUTE, minute);
+                        end_time.setText(tf.format(newDate.getTime()));
+                    }
+                }, mHour, mMin, true);
+                mTimePicker.setTitle("Select end time");
+                mTimePicker.show();
+                break;
+            case R.id.b_edit:
+                try {
+                    sTime = tf.parse(break_time.getText().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                mTime.setTime(sTime);
+                mHour = mTime.get(Calendar.HOUR_OF_DAY);
+                mMin = mTime.get(Calendar.MINUTE);
+
+                mTimePicker = new TimePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT,new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                        Calendar newDate = Calendar.getInstance();
+                        newDate.set(Calendar.HOUR_OF_DAY, hour);
+                        newDate.set(Calendar.MINUTE, minute);
+                        break_time.setText(tf.format(newDate.getTime()));
+                    }
+                }, mHour, mMin, true);
+                mTimePicker.setTitle("Select break time");
+                mTimePicker.show();
+                break;
+
+            case R.id.cal_button:
+                ComputeNetWorkTime();
+                break;
+        }
+
+    }
+
+    private void ComputeNetWorkTime() {
+        try {
+            Date st = tf.parse(start_time.getText().toString());
+            Date et = tf.parse(end_time.getText().toString());
+            Date bt = tf.parse(break_time.getText().toString());
+            if (et.getTime() - st.getTime() <= 0) {
+                work_time.setText("");
+                Toast.makeText(this, "The end time is earlier than start time, please check!", Toast.LENGTH_LONG).show();
+                return;
+            }
+            long dif = et.getTime() - st.getTime();
+            int difMin =(int) dif / (60 * 1000) % 60;
+            int difHours = (int) dif / (60 * 60 * 1000) % 24;
+
+            Date interval = tf.parse(""+difHours+":"+difMin);
+
+            if (interval.getTime() - bt.getTime() <= 0) {
+                work_time.setText("");
+                Toast.makeText(this, "No valid work hours, please check!", Toast.LENGTH_LONG).show();
+                return;
+            }
+            dif = interval.getTime() - bt.getTime();
+            difMin =(int) dif / (60 * 1000) % 60;
+            difHours = (int) dif / (60 * 60 * 1000) % 24;
+
+            Log.e("calculate time dif",""+difHours+":"+difMin);
+            Calendar newDate = Calendar.getInstance();
+            newDate.set(Calendar.HOUR_OF_DAY, difHours);
+            newDate.set(Calendar.MINUTE, difMin);
+            work_time.setText(tf.format(newDate.getTime()));
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 }

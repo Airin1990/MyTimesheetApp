@@ -22,7 +22,8 @@
         android:divider="?android:dividerHorizontal"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:id="@+id/tableLayout">
 
         <TableRow
             android:layout_width="match_parent"
@@ -147,10 +148,20 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:inputType="time"
-                android:hint="end time - start time - break"
                 android:ems="10"
-                android:layout_weight="2"
+                android:layout_weight="1.2"
                 android:id="@+id/wt_edit" />
+
+            <Button
+                android:text="Calculate"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tableLayout"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/cal_button" />
 
         </TableRow>
 
@@ -182,6 +193,8 @@
 
         </TableRow>
     </TableLayout>
+
+
 
 
 </RelativeLayout>
