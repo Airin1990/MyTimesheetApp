@@ -23,12 +23,32 @@
 
     <include layout="@layout/content_editor" />
 
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_discard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            app:fabSize="normal"
+            android:scaleType="center"
+            app:srcCompat="@drawable/ic_close_white_24dp" />
+
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:fabSize="normal"
+        android:scaleType="center"
+        android:layout_gravity="left|bottom"
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="85dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        app:srcCompat="@drawable/ic_done_white_24dp"
+        app:layout_anchor="@id/fab_discard"
+        app:layout_anchorGravity="top"/>
 
 </android.support.design.widget.CoordinatorLayout>

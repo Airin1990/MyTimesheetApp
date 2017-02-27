@@ -15,186 +15,215 @@
 
 
     <TableLayout
+        android:id="@+id/tableLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_corner_border"
-        android:showDividers="middle"
-        android:divider="?android:dividerHorizontal"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/tableLayout">
+        android:layout_alignParentTop="true"
+        android:background="@drawable/solid_corner_border"
+        android:divider="?android:dividerHorizontal"
+        android:showDividers="middle">
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="5dp">
+            android:background="@color/lighter_gray">
 
             <TextView
+                android:id="@+id/record_title"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="20dp"
+                android:text="Daily Timesheet Record"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:text="Date"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:id="@+id/textView3" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
 
             <EditText
+                android:id="@+id/date_edit"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="date"
+                android:layout_weight="2"
+                android:ems="10"
+                android:gravity="center"
                 android:hint="today"
-                android:ems="10"
-                android:layout_weight="2"
-                android:id="@+id/date_edit" />
+                android:inputType="date"
+                android:textStyle="italic" />
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="5dp">
+            android:background="@color/lighter_gray">
+
             <TextView
+                android:id="@+id/textView4"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:text="Start Time"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:id="@+id/textView4" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
 
             <EditText
+                android:id="@+id/st_edit"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="time"
+                android:layout_weight="2"
+                android:ems="10"
+                android:gravity="center"
                 android:hint="start"
-                android:ems="10"
-                android:layout_weight="2"
-                android:id="@+id/st_edit" />
+                android:inputType="time"
+                android:textStyle="italic" />
 
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="5dp">
+            >
+
             <TextView
+                android:id="@+id/textView5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:text="End Time"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:id="@+id/textView5" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
 
             <EditText
+                android:id="@+id/et_edit"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="time"
+                android:layout_weight="2"
+                android:ems="10"
+                android:gravity="center"
                 android:hint="end"
-                android:ems="10"
-                android:layout_weight="2"
-                android:id="@+id/et_edit" />
+                android:inputType="time"
+                android:textStyle="italic" />
 
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="5dp">
+            android:background="@color/lighter_gray">
+
             <TextView
+                android:id="@+id/textView6"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:text="Break"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:id="@+id/textView6" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
 
             <EditText
+                android:id="@+id/b_edit"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="time"
-                android:hint="break"
-                android:ems="10"
                 android:layout_weight="2"
-                android:id="@+id/b_edit" />
+                android:ems="10"
+                android:gravity="center"
+                android:hint="break"
+                android:inputType="time"
+                android:textStyle="italic" />
 
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="5dp">
+            >
+
             <TextView
-                android:text="Net Work Time"
+                android:id="@+id/textView7"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:id="@+id/textView7" />
+                android:text="Net Work Time"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
 
             <EditText
+                android:id="@+id/wt_edit"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="time"
-                android:ems="10"
                 android:layout_weight="1.2"
-                android:id="@+id/wt_edit" />
+                android:ems="10"
+                android:gravity="center"
+                android:hint="Click to calc"
+                android:inputType="time"
+                android:textStyle="italic" />
 
             <Button
-                android:text="Calculate"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:id="@+id/cal_button"
                 android:layout_width="0dp"
-                android:layout_weight="0.8"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tableLayout"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:id="@+id/cal_button" />
+                android:layout_below="@+id/tableLayout"
+                android:layout_weight="0.8"
+                android:text="Calculate"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="5dp">
+            android:background="@color/lighter_gray">
+
             <TextView
-                android:text="Comments"
+                android:id="@+id/textView8"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:id="@+id/textView8" />
+                android:text="Comments"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
 
             <EditText
+                android:id="@+id/comment_edit"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:ems="10"
+                android:padding="10dp"
+                android:gravity="center_vertical"
+                android:hint="start"
                 android:inputType="textMultiLine"
                 android:lines="3"
-                android:hint="start"
-                android:gravity="start"
-                android:ems="10"
-                android:layout_weight="2"
-                android:id="@+id/comment_edit" />
+                android:textStyle="italic" />
 
         </TableRow>
     </TableLayout>
-
-
 
 
 </RelativeLayout>
