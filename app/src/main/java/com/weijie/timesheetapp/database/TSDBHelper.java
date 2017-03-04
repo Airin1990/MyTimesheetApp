@@ -22,21 +22,21 @@ public class TSDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         // Build SQL query by appending entries
-        String SQL_CREATE_TS_TABLE = "CREATE TABLE " + TSContract.TSEntry.TABLE_NAME + " ("
+        String SQL_CREATE_TS_TABLE = "CREATE TABLE IF NOT EXISTS " + TSContract.TSEntry.TABLE_NAME + " ("
                 + TSContract.TSEntry.COLUMN_TID + " INTEGER PRIMARY KEY NOT NULL, "
                 + TSContract.TSEntry.COLUMN_TNAME + " TEXT NOT NULL, "
                 + TSContract.TSEntry.COLUMN_UID + " INTEGER NOT NULL, "
                 + TSContract.TSEntry.COLUMN_TCREATED + " TEXT, "
                 + TSContract.TSEntry.COLUMN_TUPDATED + " TEXT);";
 
-        String SQL_CREATE_USER_TABLE = "CREATE TABLE " + TSContract.UserEntry.TABLE_NAME + " ("
+        String SQL_CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS " + TSContract.UserEntry.TABLE_NAME + " ("
                 + TSContract.UserEntry.COLUMN_UID + " INTEGER PRIMARY KEY NOT NULL, "
                 + TSContract.UserEntry.COLUMN_UNAME + " TEXT NOT NULL, "
                 + TSContract.UserEntry.COLUMN_UEMAIL + " TEXT, "
                 + TSContract.UserEntry.COLUMN_UFBID + " INTEGER, "
                 + TSContract.UserEntry.COLUMN_UCREATED + " TEXT);";
 
-        String SQL_CREATE_RECORD_TABLE = "CREATE TABLE " + TSContract.RecordEntry.TABLE_NAME + " ("
+        String SQL_CREATE_RECORD_TABLE = "CREATE TABLE IF NOT EXISTS " + TSContract.RecordEntry.TABLE_NAME + " ("
                 + TSContract.RecordEntry.COLUMN_RID + " INTEGER PRIMARY KEY NOT NULL, "
                 + TSContract.RecordEntry.COLUMN_DATE + " TEXT NOT NULL, "
                 + TSContract.RecordEntry.COLUMN_START_TIME + " TEXT NOT NULL, "
@@ -50,7 +50,7 @@ public class TSDBHelper extends SQLiteOpenHelper {
                 + TSContract.RecordEntry.COLUMN_RUPDATED + " TEXT);";
 
 
-        String SQL_CREATE_SHARE_TABLE = "CREATE TABLE " + TSContract.TSEntry.TABLE_NAME + " ("
+        String SQL_CREATE_SHARE_TABLE = "CREATE TABLE IF NOT EXISTS " + TSContract.ShareEntry.TABLE_NAME + " ("
                 + TSContract.ShareEntry.COLUMN_SID + " INTEGER PRIMARY KEY NOT NULL, "
                 + TSContract.ShareEntry.COLUMN_TID + " INTEGER NOT NULL, "
                 + TSContract.ShareEntry.COLUMN_UID + " INTEGER NOT NULL, "

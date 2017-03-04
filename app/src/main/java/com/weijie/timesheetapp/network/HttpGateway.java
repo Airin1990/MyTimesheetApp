@@ -19,41 +19,37 @@ import okhttp3.Response;
  * Created by weiji_000 on 2/23/2017.
  */
 
-public class OKHttpManager {
+public final class HttpGateway {
 
-    private static final String BASE_URL = "http://LowCost-env.mytkurtxsj.us-east-1.elasticbeanstalk.com/webapi";
-    private static final String END_POINT = "/messages";
+
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
-    private OkHttpClient okHttpClient = new OkHttpClient();
+    private OkHttpClient okHttpClient;
 
-    public OKHttpManager() {
-
+    public HttpGateway() {
+        okHttpClient = new OkHttpClient();
     }
 
-    public void get(String url) {
+    public Response doGet(String getUrl) {
+
 
         Request request = new Request.Builder()
-                .url(BASE_URL+END_POINT)
+                .url(getUrl)
                 .build();
 
-            okHttpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
 
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String res = response.body().string();
-                    Log.d("OKHttp",res);
-                }
-            });
+        Response response = null;
+        try {
+            response = okHttpClient.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
 
     }
 
-    public void post(String id, String json) {
+    public void doPost(String postUrl, String param, String json) {
 
         JSONObject jsonObject = null;
         try {
@@ -69,7 +65,7 @@ public class OKHttpManager {
 
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
-                .url(BASE_URL+END_POINT)
+                .url(postUrl)
                 .post(body)
                 .build();
 
