@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -18,14 +17,21 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.weijie.timesheetapp.R;
+import com.weijie.timesheetapp.network.Controller;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import okhttp3.Response;
+
 public class EditorActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final String TAG = EditorActivity.class.getSimpleName();
     EditText date;
     EditText start_time;
     EditText end_time;
@@ -33,10 +39,12 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     EditText work_time;
     Button button;
     EditText comments;
+    int editMode = 0;
+    String record_ID;
 
     DatePickerDialog mDatePicker;
     TimePickerDialog mTimePicker;
-    private SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+    private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat tf = new SimpleDateFormat("HH:mm");
 
     @Override
@@ -50,8 +58,15 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                onBackPressed();
+            }
+        });
+
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab_save);
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveRecord();
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -64,24 +79,92 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         button = (Button) findViewById(R.id.cal_button);
         comments = (EditText) findViewById(R.id.comment_edit);
 
-        populateDefaultValue();
+        editMode = getIntent().getIntExtra("mode", 1);
+        if (editMode == 1) {
+            populateDefaultValue();
+        } else {
+            populateDefaultValue();
+            record_ID = getIntent().getStringExtra("rid");
+            date.setText(getIntent().getStringExtra("date"));
+            start_time.setText(getIntent().getStringExtra("s"));
+            end_time.setText(getIntent().getStringExtra("e"));
+            int pt1 = getIntent().getIntExtra("b", 0);
+            int pt2 = getIntent().getIntExtra("w", 0);
+            try {
+                break_time.setText(tf.format(tf.parse(""+pt1/60+":"+pt1%60)));
+                work_time.setText(tf.format(tf.parse(""+pt2/60+":"+pt2%60)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            comments.setText(getIntent().getStringExtra("c"));
+        }
 
+
+    }
+
+    private void saveRecord() {
+
+
+        Thread schedule = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject();
+                    jsonObject.put("date",date.getText().toString());
+                    jsonObject.put("start_time",start_time.getText().toString()+":00");
+                    jsonObject.put("end_time", end_time.getText().toString()+":00");
+                    jsonObject.put("break_time", toMins(break_time.getText().toString()));
+                    jsonObject.put("work_time", toMins(work_time.getText().toString()));
+                    jsonObject.put("is_weekend", 0);
+                    jsonObject.put("tid", 1299);
+                    jsonObject.put("comments", comments.getText().toString());
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, jsonObject.toString());
+                Response response = null;
+                if (editMode == 1) {
+                    response = Controller.AppEvent(Controller.Action.INSERT_RECORD, "", jsonObject);
+                }
+                else {
+                    response = Controller.AppEvent(Controller.Action.UPDATE_RECORD, record_ID, jsonObject);
+                }
+                if (response.isSuccessful()) {
+                    EditorActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (editMode == 1) {
+                                Toast.makeText(getApplicationContext(), "New record added!", Toast.LENGTH_LONG).show();
+                                EditorActivity.this.finish();
+                            }
+                            else {
+                                Toast.makeText(getApplicationContext(), "Record upadted!", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        schedule.start();
     }
 
     private void populateDefaultValue() {
         date.setText(df.format(new Date()));
         date.setInputType(InputType.TYPE_NULL);
         date.setOnClickListener(this);
-        start_time.setText("8:00");
+        start_time.setText("08:00");
         start_time.setInputType(InputType.TYPE_NULL);
         start_time.setOnClickListener(this);
         end_time.setText("17:00");
         end_time.setInputType(InputType.TYPE_NULL);
         end_time.setOnClickListener(this);
-        break_time.setText("1:00");
+        break_time.setText("01:00");
         break_time.setInputType(InputType.TYPE_NULL);
         break_time.setOnClickListener(this);
         work_time.setEnabled(false);
+        work_time.setText("08:00");
         button.setOnClickListener(this);
     }
 
@@ -189,6 +272,15 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 break;
         }
 
+    }
+
+
+    private int toMins(String s) {
+        String[] hourMin = s.split(":");
+        int hour = Integer.parseInt(hourMin[0]);
+        int mins = Integer.parseInt(hourMin[1]);
+        int hoursInMins = hour * 60;
+        return hoursInMins + mins;
     }
 
     private void ComputeNetWorkTime() {

@@ -7,7 +7,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.weijie.timesheetapp.R;
-import com.weijie.timesheetapp.network.HttpGateway;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -18,11 +17,6 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
-
-        //test area for http connection
-        HttpGateway okHttpManager = new HttpGateway();
-        okHttpManager.doGet("aaa");
-        okHttpManager.doPost("","3","fjdk");
 
         Thread myThread = new Thread() {
             @Override

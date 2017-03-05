@@ -1,15 +1,28 @@
 package com.weijie.timesheetapp.activities;
 
+import android.app.AlertDialog;
+import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.CursorAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,6 +33,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.internal.bind.SqlDateTypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.weijie.timesheetapp.R;
+import com.weijie.timesheetapp.adapters.RecordCursorAdapter;
 import com.weijie.timesheetapp.database.TSContract;
 import com.weijie.timesheetapp.models.Record;
 import com.weijie.timesheetapp.network.Controller;
@@ -30,21 +44,23 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import okhttp3.Response;
 
-public class TimesheetActivity extends AppCompatActivity {
+import static com.weijie.timesheetapp.network.Controller.AppEvent;
 
-    private final static String TAG = TimesheetActivity.class.getSimpleName();
+public class TimesheetActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
-    ArrayList<String> dummyData;
-    ArrayList<Record> recordList;
-    ArrayAdapter arrayAdapter;
+    private static final String TAG = TimesheetActivity.class.getSimpleName();
+    private static final int RECORD_LOADER = 0;
+    boolean shouldExecuteOnResume;
+
+    RecordCursorAdapter mRecordCursorAdapter;
     ListView listView;
+    Spinner spinner;
+    ProgressDialog loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,32 +69,103 @@ public class TimesheetActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        loading = new ProgressDialog(this);
+        loading.setCancelable(true);
+        loading.setMessage("Loading timesheet...");
+        loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), EditorActivity.class);
+                // mode = 1 if insertion, mode = 0 if update
+                intent.putExtra("mode",1);
                 startActivity(intent);
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        populateDummyData();
-        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, dummyData);
+
         listView = (ListView) findViewById(R.id.ts_listview);
         View emptyView = getLayoutInflater().inflate(R.layout.empty_listview, null);
         addContentView(emptyView, listView.getLayoutParams());
         listView.setEmptyView(emptyView);
-        listView.setAdapter(arrayAdapter);
+        listView.setVisibility(View.INVISIBLE);
+        mRecordCursorAdapter = new RecordCursorAdapter(this, null);
+        listView.setAdapter(mRecordCursorAdapter);
+        listView.setOnItemClickListener(this);
+        populateDummyData();
+        shouldExecuteOnResume = false;
+        getLoaderManager().initLoader(RECORD_LOADER, null, this);
+
+        spinner = (Spinner) findViewById(R.id.spinner);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String[] projection = {TSContract.RecordEntry.COLUMN_RID+ " as "+ BaseColumns._ID,
+                        TSContract.RecordEntry.COLUMN_DATE,
+                        TSContract.RecordEntry.COLUMN_START_TIME,
+                        TSContract.RecordEntry.COLUMN_END_TIME,
+                        TSContract.RecordEntry.COLUMN_BREAK,
+                        TSContract.RecordEntry.COLUMN_WORK_TIME,
+                        TSContract.RecordEntry.COLUMN_COMMENTS,
+                        TSContract.RecordEntry.COLUMN_TID};
+                Cursor c;
+                switch (i) {
+                    case 1:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_DATE + " DESC");
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                    case 2:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_START_TIME + " DESC");
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                    case 3:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_END_TIME + " DESC");
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                    case 4:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_BREAK + " DESC");
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                    case 5:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_WORK_TIME + " DESC");
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                    case 0: default:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, null);
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        if(shouldExecuteOnResume){
+            populateDummyData();
+        } else{
+            shouldExecuteOnResume = true;
+        }
+        super.onResume();
     }
 
     private void populateDummyData() {
-        dummyData = new ArrayList<>(Arrays.asList("One","Two","Three","Four","Five","Six","Seven","Eight"));
+        loading.show();
         Thread schedule = new Thread(new Runnable(){
             @Override
             public void run() {
                 try {
-                    Response resp = Controller.AppEvent(Controller.Action.DISPLAY_RECORD_LIST);
+                    Response resp = AppEvent(Controller.Action.DISPLAY_RECORD_LIST,"",null);
 
                     Type type = new TypeToken<List<Record>>(){}.getType();
 
@@ -150,8 +237,8 @@ public class TimesheetActivity extends AppCompatActivity {
                     TimesheetActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            arrayAdapter = new ArrayAdapter(TimesheetActivity.this, android.R.layout.simple_list_item_1, fromJson);
-                            listView.setAdapter(arrayAdapter);
+                            listView.setVisibility(View.VISIBLE);
+                            loading.dismiss();
                         }
                     });
 
@@ -163,26 +250,117 @@ public class TimesheetActivity extends AppCompatActivity {
         schedule.start();
     }
 
-    private void insertRecord(Record r) {
-        ContentValues values = new ContentValues();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat tf = new SimpleDateFormat("HH:mm");
-        values.put(TSContract.RecordEntry.COLUMN_RID,r.getRid());
-        values.put(TSContract.RecordEntry.COLUMN_DATE, df.format(r.getDate()));
-        values.put(TSContract.RecordEntry.COLUMN_START_TIME, tf.format(r.getStart_time()));
-        values.put(TSContract.RecordEntry.COLUMN_END_TIME, tf.format(r.getEnd_time()));
-        values.put(TSContract.RecordEntry.COLUMN_BREAK, r.getBreak_time());
-        values.put(TSContract.RecordEntry.COLUMN_WORK_TIME, r.getWork_time());
-        values.put(TSContract.RecordEntry.COLUMN_COMMENTS, r.getComments());
-        values.put(TSContract.RecordEntry.COLUMN_TID, r.getTid());
-        values.put(TSContract.RecordEntry.COLUMN_IS_WEEKEND, r.getIs_weekend());
-        getContentResolver().insert(TSContract.RecordEntry.CONTENT_URI, values);
-
-    }
-
     private int deleteAllRecord() {
         int rowsDeleted = getContentResolver().delete(TSContract.RecordEntry.CONTENT_URI, null, null);
         return rowsDeleted;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.ts_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_remove:
+                showDeleteConfirmationDialog();
+                return true;
+            case R.id.action_sharing:
+                showShareConfirmationDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    private void showShareConfirmationDialog() {
+        final EditText emailEditText = new EditText(this);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.share)
+                .setMessage(R.string.share_ts_msg)
+                .setView(emailEditText)
+                .setPositiveButton("Share", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        shareTimesheet();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
+    }
+
+    private void shareTimesheet() {
+        Response response = Controller.AppEvent(Controller.Action.SEND_SHARE,"",null);
+    }
+
+    private void showDeleteConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.delete);
+        builder.setMessage(R.string.delete_timesheet_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                deleteTimesheet();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void deleteTimesheet() {
+        Response response = Controller.AppEvent(Controller.Action.DELETE_RECORD, "",null);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        String[] projection = {TSContract.RecordEntry.COLUMN_RID+ " as "+ BaseColumns._ID,
+                TSContract.RecordEntry.COLUMN_DATE,
+                TSContract.RecordEntry.COLUMN_START_TIME,
+                TSContract.RecordEntry.COLUMN_END_TIME,
+                TSContract.RecordEntry.COLUMN_BREAK,
+                TSContract.RecordEntry.COLUMN_WORK_TIME,
+                TSContract.RecordEntry.COLUMN_COMMENTS,
+                TSContract.RecordEntry.COLUMN_TID };
+        return new CursorLoader(this, TSContract.RecordEntry.CONTENT_URI, projection, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mRecordCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mRecordCursorAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Cursor c = ((CursorAdapter) adapterView.getAdapter()).getCursor();
+        c.moveToPosition(i);
+
+        Intent intent = new Intent(this, EditorActivity.class);
+        intent.putExtra("mode", 0);
+        intent.putExtra("rid", c.getString(c.getColumnIndex(BaseColumns._ID)));
+        intent.putExtra("date", c.getString(c.getColumnIndex(TSContract.RecordEntry.COLUMN_DATE)));
+        intent.putExtra("s",c.getString(c.getColumnIndex(TSContract.RecordEntry.COLUMN_START_TIME)));
+        intent.putExtra("e",c.getString(c.getColumnIndex(TSContract.RecordEntry.COLUMN_END_TIME)));
+        intent.putExtra("b",c.getInt(c.getColumnIndex(TSContract.RecordEntry.COLUMN_BREAK)));
+        intent.putExtra("w",c.getInt(c.getColumnIndex(TSContract.RecordEntry.COLUMN_WORK_TIME)));
+        intent.putExtra("c",c.getString(c.getColumnIndex(TSContract.RecordEntry.COLUMN_COMMENTS)));
+        startActivity(intent);
+
+    }
 }

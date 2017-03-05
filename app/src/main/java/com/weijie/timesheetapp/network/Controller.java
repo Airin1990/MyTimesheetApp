@@ -2,6 +2,8 @@ package com.weijie.timesheetapp.network;
 
 import com.weijie.timesheetapp.MyApplication;
 
+import org.json.JSONObject;
+
 import okhttp3.Response;
 
 /**
@@ -19,29 +21,57 @@ public class Controller {
 
     public class Action {
         public static final int DISPLAY_RECORD_LIST = 1001;
+        public static final int DISPLAY_TS_LIST = 1002;
+        public static final int GET_SHARE_TS_LIST = 1003;
+        public static final int GET_SUMMARY = 1004;
+        public static final int GET_USER_PROFILE = 1005;
+        public static final int GET_USER_SHARE_STATUS = 1006;
 
         public static final int INSERT_RECORD = 2001;
+        public static final int INSERT_NEW_TS = 2002;
+        public static final int SEND_SHARE = 2003;
 
-        public static final int  UPDATE_RECORD = 3001;
+        public static final int UPDATE_RECORD = 3001;
+        public static final int UPDATE_CURRENT_TS = 3002;
+        public static final int REVOKE_SHARE = 3003;
 
         public static final int DELETE_RECORD = 4001;
+        public static final int DELETE_TIMESHEET = 4002;
     }
 
-    public static Response AppEvent (int action) {
+    public static Response AppEvent (int action, String param, JSONObject json) {
 
         Response resp = null;
         switch (action) {
             case Action.DISPLAY_RECORD_LIST:
                 resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + RECORD_URL);
                 break;
-
+            case Action.DISPLAY_TS_LIST:
+                break;
+            case Action.GET_SHARE_TS_LIST:
+                break;
+            case Action.GET_SUMMARY:
+                break;
+            case Action.GET_USER_PROFILE:
+                break;
+            case Action.GET_USER_SHARE_STATUS:
+                break;
             case Action.INSERT_RECORD:
-
-
+                resp = MyApplication.getInstance().getHttpGateway().doPost(BASE_URL + RECORD_URL, param, json);
+                break;
+            case Action.INSERT_NEW_TS:
+                break;
             case Action.UPDATE_RECORD:
-
-
+                resp = MyApplication.getInstance().getHttpGateway().doPut(BASE_URL + RECORD_URL, "/"+param, json);
+                break;
+            case Action.UPDATE_CURRENT_TS:
+                break;
             case Action.DELETE_RECORD:
+                break;
+            case Action.REVOKE_SHARE:
+                break;
+            case Action.DELETE_TIMESHEET:
+                break;
 
         }
         return resp;
