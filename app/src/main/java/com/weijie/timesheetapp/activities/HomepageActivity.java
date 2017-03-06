@@ -1,23 +1,29 @@
 package com.weijie.timesheetapp.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.facebook.Profile;
 import com.facebook.login.widget.ProfilePictureView;
 import com.weijie.timesheetapp.R;
+import com.weijie.timesheetapp.adapters.TSAdapter;
+import com.weijie.timesheetapp.models.Timesheet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomepageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -25,6 +31,11 @@ public class HomepageActivity extends AppCompatActivity
     Profile profile;
     TextView username_tv;
     ProfilePictureView userPic;
+    List<Timesheet> list;
+    ListView listView;
+    TSAdapter tsAdapter;
+    boolean showCheckbox = false;
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +44,17 @@ public class HomepageActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if (showCheckbox) {
+                    Intent intent = new Intent(getApplicationContext(), SummaryActivity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), TimesheetActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -52,14 +68,37 @@ public class HomepageActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         View hView = navigationView.getHeaderView(0);
 
-        String name = getIntent().getStringExtra("user_name");
-        String id = getIntent().getStringExtra("user_id");
-        Log.v("facebook", name + id);
-        username_tv = (TextView) hView.findViewById(R.id.user_tv);
-        username_tv.setText(name);
-        userPic = (ProfilePictureView) hView.findViewById(R.id.profile_pic_view);
-        userPic.setProfileId(id);
+//        String name = getIntent().getStringExtra("user_name");
+//        String id = getIntent().getStringExtra("user_id");
+//        Log.v("facebook", name + id);
+//        username_tv = (TextView) hView.findViewById(R.id.user_tv);
+//        username_tv.setText(name);
+//        userPic = (ProfilePictureView) hView.findViewById(R.id.profile_pic_view);
+//        userPic.setProfileId(id);
 
+        listView = (ListView) findViewById(R.id.homepage_list);
+        populateTimesheetInfo();
+        tsAdapter = new TSAdapter(this, list, showCheckbox);
+        TextView textView = new TextView(this);
+        textView.setText("My Timesheet");
+        listView.addHeaderView(textView);
+        textView.setGravity(Gravity.CENTER_HORIZONTAL);
+        listView.setAdapter(tsAdapter);
+
+    }
+
+    private void populateTimesheetInfo() {
+        list = new ArrayList<>();
+        list.add(new Timesheet(1,"first ts","jake"));
+        list.add(new Timesheet(2,"second ts","james"));
+        list.add(new Timesheet(3,"third ts","julia"));
+        list.add(new Timesheet(4,"fourth ts","jacob"));
+        list.add(new Timesheet(5,"fifth ts","jamie"));
+        list.add(new Timesheet(1,"first ts","jake"));
+        list.add(new Timesheet(2,"second ts","james"));
+        list.add(new Timesheet(3,"third ts","julia"));
+        list.add(new Timesheet(4,"fourth ts","jacob"));
+        list.add(new Timesheet(5,"fifth ts","jamie"));
     }
 
     @Override
@@ -74,7 +113,6 @@ public class HomepageActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.homepage, menu);
         return true;
     }
@@ -88,6 +126,17 @@ public class HomepageActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.action_multi_select) {
+            showCheckbox = !showCheckbox;
+            tsAdapter = new TSAdapter(this, list, showCheckbox);
+            listView.setAdapter(tsAdapter);
+            if (showCheckbox) {
+                fab.setImageResource(R.drawable.ic_assignment_white_24dp);
+            } else {
+                fab.setImageResource(R.drawable.ic_add_white_24dp);
+            }
             return true;
         }
 

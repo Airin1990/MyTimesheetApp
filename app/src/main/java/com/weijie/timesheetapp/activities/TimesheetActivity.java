@@ -270,14 +270,40 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
             case R.id.action_sharing:
                 showShareConfirmationDialog();
                 return true;
+            case R.id.action_edit:
+                showEditConfirmationDialog();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
     }
 
+    private void showEditConfirmationDialog() {
+        final EditText nameEditText = new EditText(this);
+        nameEditText.setHint("Enter timesheet name here");
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.edit)
+                .setMessage(R.string.edit_ts_msg)
+                .setView(nameEditText)
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        renameTimesheet();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
+    }
+
+    private void renameTimesheet() {
+        Response response = Controller.AppEvent(Controller.Action.UPDATE_CURRENT_TS, "", null);
+    }
+
     private void showShareConfirmationDialog() {
         final EditText emailEditText = new EditText(this);
+        emailEditText.setHint("Enter sharing email here");
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.share)
                 .setMessage(R.string.share_ts_msg)

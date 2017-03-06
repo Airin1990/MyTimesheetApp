@@ -21,7 +21,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_timesheet">TimesheetActivity</string>
+    <string name="title_activity_timesheet">Timesheet</string>
 
     <!-- Spinner entries-->
     <string-array name="order_array">
@@ -39,4 +39,8 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="share_ts_msg">Please Enter the User Email</string>
+    <string name="edit">Edit</string>
+    <string name="edit_ts_msg">Rename your timesheet</string>
+    <string name="action_select">\u2611   Select</string>
+    <string name="action_log_out">Log Out</string>
 </resources>

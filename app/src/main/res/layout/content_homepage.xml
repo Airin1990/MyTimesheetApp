@@ -22,8 +22,10 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3"
-            android:layout_margin="8dp"
-            android:background="@android:color/holo_blue_bright">
+            android:padding="8dp"
+            android:id="@+id/homepage_list"
+            android:background="@drawable/rounded_corner_border"
+            >
 
         </ListView>
 
@@ -32,6 +34,7 @@
             android:layout_height="0dp"
             android:layout_weight="2"
             android:layout_margin="8dp"
+            android:id="@+id/share_list"
             android:background="@android:color/holo_orange_light">
 
         </ListView>

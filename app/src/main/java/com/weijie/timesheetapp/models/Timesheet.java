@@ -5,6 +5,37 @@ package com.weijie.timesheetapp.models;
  */
 
 public class Timesheet {
-    private String TID;
-    private String Author;
+    private long TID;
+    private String name;
+    private String authorID;
+
+    public Timesheet(long TID, String name, String authorID) {
+        this.TID = TID;
+        this.name = name;
+        this.authorID = authorID;
+    }
+
+    public long getTID() {
+        return TID;
+    }
+
+    public void setTID(long TID) {
+        this.TID = TID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAuthorID() {
+        return authorID;
+    }
+
+    public void setAuthorID(String authorID) {
+        this.authorID = authorID;
+    }
 }

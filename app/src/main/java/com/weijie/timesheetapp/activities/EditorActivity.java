@@ -124,7 +124,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                     e.printStackTrace();
                 }
                 Log.d(TAG, jsonObject.toString());
-                Response response = null;
+                Response response;
                 if (editMode == 1) {
                     response = Controller.AppEvent(Controller.Action.INSERT_RECORD, "", jsonObject);
                 }
