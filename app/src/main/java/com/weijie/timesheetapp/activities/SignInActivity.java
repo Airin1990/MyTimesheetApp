@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,13 +30,15 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.weijie.timesheetapp.R;
 
 public class SignInActivity extends AppCompatActivity {
 
     private static final String TAG = SignInActivity.class.getSimpleName();
-    EditText mUsername;
+    EditText mEmail;
     EditText mPassword;
     TextView create_account;
     ProgressDialog mProgress;
@@ -55,7 +58,7 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
         getSupportActionBar().hide();
 
-        mUsername = (EditText) findViewById(R.id.username_et);
+        mEmail = (EditText) findViewById(R.id.email_et);
         mPassword = (EditText) findViewById(R.id.pw_et);
         create_account = (TextView) findViewById(R.id.goToSignUp);
         mProgress = new ProgressDialog(this);
@@ -132,7 +135,7 @@ public class SignInActivity extends AppCompatActivity {
 
     public void SignIn(View view) {
         if (validateForm()) {
-            String email = mUsername.getText().toString();
+            String email = mEmail.getText().toString();
             String pass = mPassword.getText().toString();
             mProgress.show();
 
@@ -147,7 +150,17 @@ public class SignInActivity extends AppCompatActivity {
                             // signed in user can be handled in the listener.
                             mProgress.hide();
                             if (!task.isSuccessful()) {
-                                Log.w(TAG, "signInWithEmail:failed", task.getException());
+                                try {
+                                    throw task.getException();
+                                } catch(FirebaseAuthInvalidUserException e) {
+                                    mEmail.setError(getString(R.string.error_user_not_exists));
+                                    mEmail.requestFocus();
+                                } catch(FirebaseAuthInvalidCredentialsException e) {
+                                    mPassword.setError(getString(R.string.error_incorrect_password));
+                                    mPassword.requestFocus();
+                                } catch(Exception e) {
+                                    Log.e(TAG, e.getMessage());
+                                }
                                 Toast.makeText(SignInActivity.this, "Authorize failed!",
                                         Toast.LENGTH_SHORT).show();
                             }
@@ -165,13 +178,29 @@ public class SignInActivity extends AppCompatActivity {
                     });
 
         }
-        else {
-            Toast.makeText(this, "Please check your input", Toast.LENGTH_LONG).show();
-        }
     }
 
     private boolean validateForm() {
-        return true;
+        boolean valid = true;
+        String email = mEmail.getText().toString();
+        String password = mPassword.getText().toString();
+
+        if(email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            mEmail.setError(getString(R.string.error_invalid_email));
+            valid = false;
+        }
+        else {
+            mEmail.setError(null);
+        }
+
+        if (password.isEmpty() || password.length() < 6 || password.length() > 12) {
+            mPassword.setError(getString(R.string.error_password_length));
+            valid = false;
+        }
+        else {
+            mPassword.setError(null);
+        }
+        return valid;
     }
 
     public void goToSignUp(View view) {
