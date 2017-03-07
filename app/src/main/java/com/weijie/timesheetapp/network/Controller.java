@@ -29,14 +29,17 @@ public class Controller {
 
         public static final int INSERT_RECORD = 2001;
         public static final int INSERT_NEW_TS = 2002;
-        public static final int SEND_SHARE = 2003;
+        public static final int ADD_NEW_USER = 2003;
+        public static final int SEND_SHARE = 2004;
 
         public static final int UPDATE_RECORD = 3001;
         public static final int UPDATE_CURRENT_TS = 3002;
-        public static final int REVOKE_SHARE = 3003;
+        public static final int UPDATE_USER = 3003;
+        public static final int REVOKE_SHARE = 3004;
 
         public static final int DELETE_RECORD = 4001;
         public static final int DELETE_TIMESHEET = 4002;
+        public static final int DELETE_USER = 4003;
     }
 
     public static Response AppEvent (int action, String param, JSONObject json) {
@@ -61,10 +64,17 @@ public class Controller {
                 break;
             case Action.INSERT_NEW_TS:
                 break;
+            case Action.ADD_NEW_USER:
+                resp = MyApplication.getInstance().getHttpGateway().doPost(BASE_URL + USER_URL, param, json);
+                break;
+            case Action.SEND_SHARE:
+                break;
             case Action.UPDATE_RECORD:
                 resp = MyApplication.getInstance().getHttpGateway().doPut(BASE_URL + RECORD_URL, "/"+param, json);
                 break;
             case Action.UPDATE_CURRENT_TS:
+                break;
+            case Action.UPDATE_USER:
                 break;
             case Action.DELETE_RECORD:
                 break;
@@ -72,7 +82,10 @@ public class Controller {
                 break;
             case Action.DELETE_TIMESHEET:
                 break;
-
+            case Action.DELETE_USER:
+                break;
+            default:
+                break;
         }
         return resp;
     }

@@ -17,12 +17,16 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.weijie.timesheetapp.R;
+import com.weijie.timesheetapp.network.Controller;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import mehdi.sakout.fancybuttons.FancyButton;
+import okhttp3.Response;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -81,14 +85,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
 
                             if (!task.isSuccessful()) {
+                                mProgress.hide();
                                 try {
                                     throw task.getException();
                                 } catch(FirebaseAuthWeakPasswordException e) {
                                     password1.setError(getString(R.string.error_weak_password));
                                     password1.requestFocus();
-                                } catch(FirebaseAuthInvalidCredentialsException e) {
-                                    email_et.setError(getString(R.string.error_invalid_email));
-                                    email_et.requestFocus();
                                 } catch(FirebaseAuthUserCollisionException e) {
                                     email_et.setError(getString(R.string.error_user_exists));
                                     email_et.requestFocus();
@@ -99,18 +101,38 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                         Toast.LENGTH_SHORT).show();
                             }
                             else {
-                                Toast.makeText(SignUpActivity.this, "New Account Created!",
-                                        Toast.LENGTH_SHORT).show();
                                 // Add user info to backend db
+                                Thread thread = new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        JSONObject json = new JSONObject();
+                                        try {
+                                            json.put("email", email_et.getText().toString());
+                                            json.put("firstName", firstname.getText().toString());
+                                            json.put("lastName", lastname.getText().toString());
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        Response response = Controller.AppEvent(Controller.Action.ADD_NEW_USER, "", json);
 
-                                // Go back to login screen
-                                Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-                                startActivity(intent);
-                                SignUpActivity.this.finish();
+                                        if (response.isSuccessful()) {
+                                            SignUpActivity.this.runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    mProgress.hide();
+                                                    Toast.makeText(SignUpActivity.this, "New Account Created!",
+                                                            Toast.LENGTH_SHORT).show();
+                                                    // Go back to login screen
+                                                    Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                                                    startActivity(intent);
+                                                    SignUpActivity.this.finish();
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                                thread.start();
                             }
-
-                            mProgress.hide();
-                            // ...
                         }
                     });
         }
