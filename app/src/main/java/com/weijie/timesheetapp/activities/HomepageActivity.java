@@ -9,6 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +18,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.weijie.timesheetapp.R;
 import com.weijie.timesheetapp.adapters.TSAdapter;
 import com.weijie.timesheetapp.models.Timesheet;
@@ -68,13 +71,17 @@ public class HomepageActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         View hView = navigationView.getHeaderView(0);
 
-//        String name = getIntent().getStringExtra("user_name");
-//        String id = getIntent().getStringExtra("user_id");
-//        Log.v("facebook", name + id);
-//        username_tv = (TextView) hView.findViewById(R.id.user_tv);
-//        username_tv.setText(name);
-//        userPic = (ProfilePictureView) hView.findViewById(R.id.profile_pic_view);
-//        userPic.setProfileId(id);
+
+        profile = Profile.getCurrentProfile();
+        FirebaseAuth.getInstance().getCurrentUser().getEmail();
+
+        String name = getIntent().getStringExtra("user_name");
+        String id = getIntent().getStringExtra("user_id");
+        Log.v("facebook", name + id);
+        username_tv = (TextView) hView.findViewById(R.id.user_tv);
+        username_tv.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        userPic = (ProfilePictureView) hView.findViewById(R.id.profile_pic_view);
+        userPic.setProfileId(id);
 
         listView = (ListView) findViewById(R.id.homepage_list);
         populateTimesheetInfo();
@@ -127,8 +134,7 @@ public class HomepageActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }
-        if (id == R.id.action_multi_select) {
+        } else if (id == R.id.action_multi_select) {
             showCheckbox = !showCheckbox;
             tsAdapter = new TSAdapter(this, list, showCheckbox);
             listView.setAdapter(tsAdapter);
@@ -138,6 +144,15 @@ public class HomepageActivity extends AppCompatActivity
                 fab.setImageResource(R.drawable.ic_add_white_24dp);
             }
             return true;
+        } else if (id == R.id.action_log_out) {
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            if (mAuth.getCurrentUser() != null) {
+                mAuth.signOut();
+                LoginManager.getInstance().logOut();
+            }
+            Intent intent = new Intent(this, SignInActivity.class);
+            startActivity(intent);
+            this.finish();
         }
 
         return super.onOptionsItemSelected(item);

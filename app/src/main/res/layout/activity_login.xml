@@ -76,7 +76,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/com_facebook_loginview_log_in_button_continue"
                 android:gravity="center"
-                android:id="@+id/fb_login_button"
                 android:layout_gravity="center"/>
 
         </LinearLayout>
