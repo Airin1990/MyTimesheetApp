@@ -10,12 +10,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
@@ -52,6 +52,7 @@ public class HomepageActivity extends AppCompatActivity
 
     private long userId;
     private List<Timesheet> tsList;
+    private List<Object> adapterList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,7 @@ public class HomepageActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (showCheckbox) {
+                    Toast.makeText(getApplicationContext(), "The selected TIDs are:" + tsAdapter.getSelectedTIDs(), Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getApplicationContext(), SummaryActivity.class);
                     startActivity(intent);
                 } else {
@@ -89,10 +91,6 @@ public class HomepageActivity extends AppCompatActivity
 
         listView = (ListView) findViewById(R.id.homepage_list);
 
-        TextView textView = new TextView(this);
-        textView.setText("My Timesheet");
-        listView.addHeaderView(textView);
-        textView.setGravity(Gravity.CENTER_HORIZONTAL);
         View emptyView = getLayoutInflater().inflate(R.layout.empty_listview, null);
         addContentView(emptyView, listView.getLayoutParams());
         listView.setEmptyView(emptyView);
@@ -245,7 +243,14 @@ public class HomepageActivity extends AppCompatActivity
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tsAdapter = new TSAdapter(getApplicationContext(), tsList, showCheckbox);
+                        adapterList = new ArrayList<>();
+                        adapterList.add(new String("My Timesheet"));
+                        adapterList.addAll(tsList);
+                        adapterList.add(new String("Shared Timesheet"));
+                        adapterList.addAll(tsList);
+                        adapterList.add(new String("Revoked Timesheet"));
+                        adapterList.addAll(tsList);
+                        tsAdapter = new TSAdapter(getApplicationContext(), adapterList, showCheckbox);
                         listView.setAdapter(tsAdapter);
                     }
                 });
@@ -293,7 +298,7 @@ public class HomepageActivity extends AppCompatActivity
             return true;
         } else if (id == R.id.action_multi_select) {
             showCheckbox = !showCheckbox;
-            tsAdapter = new TSAdapter(this, tsList, showCheckbox);
+            tsAdapter = new TSAdapter(this, adapterList, showCheckbox);
             listView.setAdapter(tsAdapter);
             if (showCheckbox) {
                 fab.setImageResource(R.drawable.ic_assignment_white_24dp);

@@ -41,7 +41,7 @@
     <string name="share_ts_msg">Please Enter the User Email</string>
     <string name="edit">Edit</string>
     <string name="edit_ts_msg">Rename your timesheet</string>
-    <string name="action_select">\u2611   Select</string>
+    <string name="action_select">\u2611\u0009\u0009Select</string>
     <string name="action_log_out">Log Out</string>
     <string name="error_weak_password">The password is too weak</string>
     <string name="error_user_exists">The user already exists</string>

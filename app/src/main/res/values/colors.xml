@@ -6,4 +6,7 @@
     <color name="launchBackground">#387245</color>
     <color name="lighter_gray">#ddd</color>
     <color name="secondaryText">#FFF</color>
+    <color name="SheetBG">#4CAF50</color>
+    <color name="ShareBG">#2196F3</color>
+    <color name="RevokeBG">#F44336</color>
 </resources>
