@@ -50,6 +50,7 @@ public class Controller {
                 resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + RECORD_URL);
                 break;
             case Action.DISPLAY_TS_LIST:
+                resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + SHEET_URL + param);
                 break;
             case Action.GET_SHARE_TS_LIST:
                 break;

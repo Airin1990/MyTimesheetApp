@@ -55,7 +55,7 @@ public class TSAdapter extends ArrayAdapter<Timesheet> {
         }
 
         vh.name.setText(ts.getName());
-        vh.author.setText(ts.getAuthorID());
+        vh.author.setText(String.valueOf(ts.getAuthorID()));
         vh.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

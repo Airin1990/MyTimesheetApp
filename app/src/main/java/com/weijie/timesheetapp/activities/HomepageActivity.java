@@ -27,6 +27,7 @@ import com.weijie.timesheetapp.adapters.TSAdapter;
 import com.weijie.timesheetapp.models.Timesheet;
 import com.weijie.timesheetapp.network.Controller;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,11 +45,13 @@ public class HomepageActivity extends AppCompatActivity
     FirebaseUser firebaseUser;
     TextView username_tv;
     ProfilePictureView userPic;
-    List<Timesheet> list;
     ListView listView;
     TSAdapter tsAdapter;
     boolean showCheckbox = false;
     FloatingActionButton fab;
+
+    private long userId;
+    private List<Timesheet> tsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,13 +88,14 @@ public class HomepageActivity extends AppCompatActivity
         }
 
         listView = (ListView) findViewById(R.id.homepage_list);
-        populateTimesheetInfo();
-        tsAdapter = new TSAdapter(this, list, showCheckbox);
+
         TextView textView = new TextView(this);
         textView.setText("My Timesheet");
         listView.addHeaderView(textView);
         textView.setGravity(Gravity.CENTER_HORIZONTAL);
-        listView.setAdapter(tsAdapter);
+        View emptyView = getLayoutInflater().inflate(R.layout.empty_listview, null);
+        addContentView(emptyView, listView.getLayoutParams());
+        listView.setEmptyView(emptyView);
 
     }
 
@@ -141,8 +145,8 @@ public class HomepageActivity extends AppCompatActivity
                     JSONObject userjson;
                     try {
                         userjson = new JSONObject(json);
-                        int uid = userjson.getInt("uid");
-                        Log.d(TAG, "Facebook User:" + uid);
+                        userId = userjson.getLong("uid");
+                        Log.d(TAG, "Facebook User:" + userId);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -174,12 +178,12 @@ public class HomepageActivity extends AppCompatActivity
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    int uid = 0;
+
                     if (!json.isEmpty()) {
                         JSONObject userjson;
                         try {
                             userjson = new JSONObject(json);
-                            uid = userjson.getInt("uid");
+                            userId = userjson.getLong("uid");
                             final String firstName = userjson.getString("firstName");
                             final String lastName = userjson.getString("lastName");
                             runOnUiThread(new Runnable() {
@@ -193,7 +197,7 @@ public class HomepageActivity extends AppCompatActivity
                         }
                     }
 
-                    Log.d(TAG, "Email user:" + uid);
+                    Log.d(TAG, "Email user:" + userId);
                 }
             });
 
@@ -211,25 +215,55 @@ public class HomepageActivity extends AppCompatActivity
         return false;
     }
 
-    private void createFBUserProfile() {
-
-    }
-
     private void populateTimesheetInfo() {
-        list = new ArrayList<>();
-        list.add(new Timesheet(1,"first ts","jake"));
-        list.add(new Timesheet(2,"second ts","james"));
-        list.add(new Timesheet(3,"third ts","julia"));
-        list.add(new Timesheet(4,"fourth ts","jacob"));
-        list.add(new Timesheet(5,"fifth ts","jamie"));
-        list.add(new Timesheet(1,"first ts","jake"));
-        list.add(new Timesheet(2,"second ts","james"));
-        list.add(new Timesheet(3,"third ts","julia"));
-        list.add(new Timesheet(4,"fourth ts","jacob"));
-        list.add(new Timesheet(5,"fifth ts","jamie"));
+        tsList = new ArrayList<>();
         // retrieve timesheets, share ts by user id
 
+        Thread tsthread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Response resp = Controller.AppEvent(Controller.Action.DISPLAY_TS_LIST, "?uid="+String.valueOf(userId), null);
+                JSONArray jsonArray;
+                try {
+                    String json = resp.body().string();
+                    jsonArray = new JSONArray(json);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject temp = (JSONObject) jsonArray.get(i);
+                        Timesheet tsnew = new Timesheet(temp.getLong("tid"),
+                                temp.getString("tName"),
+                                temp.getLong("uid"),
+                                temp.getInt("shareMode"),
+                                temp.getInt("shareStatus"));
+                        tsList.add(tsnew);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tsAdapter = new TSAdapter(getApplicationContext(), tsList, showCheckbox);
+                        listView.setAdapter(tsAdapter);
+                    }
+                });
+            }
+        });
+
+        tsthread.start();
+
     }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if (userId > 0) {
+            populateTimesheetInfo();
+        }
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -259,7 +293,7 @@ public class HomepageActivity extends AppCompatActivity
             return true;
         } else if (id == R.id.action_multi_select) {
             showCheckbox = !showCheckbox;
-            tsAdapter = new TSAdapter(this, list, showCheckbox);
+            tsAdapter = new TSAdapter(this, tsList, showCheckbox);
             listView.setAdapter(tsAdapter);
             if (showCheckbox) {
                 fab.setImageResource(R.drawable.ic_assignment_white_24dp);
