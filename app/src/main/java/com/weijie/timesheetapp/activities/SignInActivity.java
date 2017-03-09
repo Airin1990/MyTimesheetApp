@@ -78,10 +78,8 @@ public class SignInActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
 
-                updateUI(user);
             }
         };
-
 
         mLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
         setupFacebookLogin();
@@ -96,9 +94,7 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
 
-                mProgress.show();
                 handleFacebookAccessToken(loginResult.getAccessToken());
-
 
             }
 
@@ -129,8 +125,11 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
-    private void updateUI(FirebaseUser user) {
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mProgress!= null && mProgress.isShowing())
+            mProgress.dismiss();
     }
 
     public void SignIn(View view) {
@@ -210,7 +209,7 @@ public class SignInActivity extends AppCompatActivity {
 
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
-
+        mProgress.show();
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -226,9 +225,7 @@ public class SignInActivity extends AppCompatActivity {
                             mProgress.hide();
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                        }
-
-                        if (task.isSuccessful()) {
+                        } else {
                             mProgress.hide();
 
                             if(Profile.getCurrentProfile() == null) {
@@ -237,8 +234,6 @@ public class SignInActivity extends AppCompatActivity {
                                     protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                                         Log.v("facebook - profile", currentProfile.getFirstName());
                                         Intent i = new Intent(getApplicationContext(), HomepageActivity.class);
-                                        i.putExtra("user_name", currentProfile.getName());
-                                        i.putExtra("user_id", currentProfile.getId());
                                         startActivity(i);
                                         mProfileTracker.stopTracking();
                                         SignInActivity.this.finish();
@@ -249,8 +244,6 @@ public class SignInActivity extends AppCompatActivity {
                                 Profile profile = Profile.getCurrentProfile();
                                 Log.v("facebook - profile", profile.getFirstName());
                                 Intent i = new Intent(getApplicationContext(), HomepageActivity.class);
-                                i.putExtra("user_name", profile.getName());
-                                i.putExtra("user_id", profile.getId());
                                 startActivity(i);
                                 SignInActivity.this.finish();
                             }

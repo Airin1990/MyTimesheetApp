@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.weijie.timesheetapp.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -22,10 +23,18 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    sleep(2500);
-                    Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(i);
-                    finish();
+                    sleep(1500);
+                    Intent i;
+                    if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                        i = new Intent(getApplicationContext(), SignInActivity.class);
+                        startActivity(i);
+                        finish();
+                    } else {
+                        i = new Intent(getApplicationContext(), HomepageActivity.class);
+                        startActivity(i);
+                        finish();
+                    }
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

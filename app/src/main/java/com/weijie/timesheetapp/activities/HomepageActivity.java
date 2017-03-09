@@ -21,17 +21,27 @@ import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.weijie.timesheetapp.R;
 import com.weijie.timesheetapp.adapters.TSAdapter;
 import com.weijie.timesheetapp.models.Timesheet;
+import com.weijie.timesheetapp.network.Controller;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Response;
 
 public class HomepageActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = HomepageActivity.class.getSimpleName();
     Profile profile;
+    FirebaseUser firebaseUser;
     TextView username_tv;
     ProfilePictureView userPic;
     List<Timesheet> list;
@@ -67,21 +77,12 @@ public class HomepageActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View hView = navigationView.getHeaderView(0);
-
-
-        profile = Profile.getCurrentProfile();
-        FirebaseAuth.getInstance().getCurrentUser().getEmail();
-
-        String name = getIntent().getStringExtra("user_name");
-        String id = getIntent().getStringExtra("user_id");
-        Log.v("facebook", name + id);
-        username_tv = (TextView) hView.findViewById(R.id.user_tv);
-        username_tv.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-        userPic = (ProfilePictureView) hView.findViewById(R.id.profile_pic_view);
-        userPic.setProfileId(id);
+        // If user is not authenticated
+        if (!ObtainUserInfo()) {
+            Intent intent = new Intent(this, SignInActivity.class);
+            startActivity(intent);
+            this.finish();
+        }
 
         listView = (ListView) findViewById(R.id.homepage_list);
         populateTimesheetInfo();
@@ -91,6 +92,126 @@ public class HomepageActivity extends AppCompatActivity
         listView.addHeaderView(textView);
         textView.setGravity(Gravity.CENTER_HORIZONTAL);
         listView.setAdapter(tsAdapter);
+
+    }
+
+    private boolean ObtainUserInfo() {
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View hView = navigationView.getHeaderView(0);
+        username_tv = (TextView) hView.findViewById(R.id.user_tv);
+        userPic = (ProfilePictureView) hView.findViewById(R.id.profile_pic_view);
+
+        if ((profile = Profile.getCurrentProfile()) != null) {
+            username_tv.setText(profile.getName());
+            userPic.setProfileId(profile.getId());
+            // retrieve user info by fbid
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Response response = Controller.AppEvent(Controller.Action.GET_USER_PROFILE, "?fbid=" + profile.getId(), null);
+
+                    String json = null;
+                    try {
+                        json = response.body().string();
+                        Log.d(TAG, json);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    // If fb user first time login
+                    if (json.isEmpty()) {
+                        JSONObject newjson = new JSONObject();
+                        try {
+                            newjson.put("fbid", profile.getId());
+                            newjson.put("firstName", profile.getFirstName());
+                            newjson.put("lastName", profile.getLastName());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Response resp = Controller.AppEvent(Controller.Action.ADD_NEW_USER, "", newjson);
+                        try {
+                            json = resp.body().string();
+                            Log.d(TAG, json);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    JSONObject userjson;
+                    try {
+                        userjson = new JSONObject(json);
+                        int uid = userjson.getInt("uid");
+                        Log.d(TAG, "Facebook User:" + uid);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+            });
+            thread.start();
+
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return true;
+
+        } else if ((firebaseUser = FirebaseAuth.getInstance().getCurrentUser()) != null) {
+            // retrieve user info by email, the user surely has the profile
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Response response = Controller.AppEvent(Controller.Action.GET_USER_PROFILE, "?email=" + firebaseUser.getEmail(), null);
+
+                    String json = null;
+                    try {
+                        json = response.body().string();
+                        Log.d(TAG, json);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    int uid = 0;
+                    if (!json.isEmpty()) {
+                        JSONObject userjson;
+                        try {
+                            userjson = new JSONObject(json);
+                            uid = userjson.getInt("uid");
+                            final String firstName = userjson.getString("firstName");
+                            final String lastName = userjson.getString("lastName");
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    username_tv.setText(firstName + " " + lastName);
+                                }
+                            });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    Log.d(TAG, "Email user:" + uid);
+                }
+            });
+
+            thread.start();
+
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private void createFBUserProfile() {
 
     }
 
@@ -106,6 +227,8 @@ public class HomepageActivity extends AppCompatActivity
         list.add(new Timesheet(3,"third ts","julia"));
         list.add(new Timesheet(4,"fourth ts","jacob"));
         list.add(new Timesheet(5,"fifth ts","jamie"));
+        // retrieve timesheets, share ts by user id
+
     }
 
     @Override

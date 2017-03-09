@@ -25,8 +25,6 @@ public class MyApplication extends Application {
         httpGateway = new HttpGateway();
     }
 
-    private long userId;
-
     public HttpGateway getHttpGateway() {
         return httpGateway;
     }
