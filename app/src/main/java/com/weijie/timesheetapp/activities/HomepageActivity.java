@@ -7,6 +7,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import mehdi.sakout.fancybuttons.FancyButton;
 import okhttp3.Response;
 
 public class HomepageActivity extends AppCompatActivity
@@ -47,12 +49,17 @@ public class HomepageActivity extends AppCompatActivity
     ProfilePictureView userPic;
     ListView listView;
     TSAdapter tsAdapter;
+    TSAdapter shareAdapter;
     boolean showCheckbox = false;
     FloatingActionButton fab;
+    AlertDialog dialog;
+    ListView sharelv;
 
     private long userId;
     private List<Timesheet> tsList;
+    private List<Object> pendlingList;
     private List<Object> adapterList;
+    private boolean hasPendingShare = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -244,14 +251,19 @@ public class HomepageActivity extends AppCompatActivity
                     @Override
                     public void run() {
                         adapterList = new ArrayList<>();
+                        pendlingList = new ArrayList<>();
+                        pendlingList.addAll(tsList);
                         adapterList.add(new String("My Timesheet"));
                         adapterList.addAll(tsList);
                         adapterList.add(new String("Shared Timesheet"));
                         adapterList.addAll(tsList);
                         adapterList.add(new String("Revoked Timesheet"));
                         adapterList.addAll(tsList);
+                        shareAdapter = new TSAdapter(getApplicationContext(), pendlingList, true);
+                        sharelv.setAdapter(shareAdapter);
                         tsAdapter = new TSAdapter(getApplicationContext(), adapterList, showCheckbox);
                         listView.setAdapter(tsAdapter);
+                        dialog.show();
                     }
                 });
             }
@@ -266,7 +278,37 @@ public class HomepageActivity extends AppCompatActivity
         super.onPostResume();
         if (userId > 0) {
             populateTimesheetInfo();
+            if (hasPendingShare) {
+                showShareReminder();
+            }
         }
+    }
+
+    private void showShareReminder() {
+        View view = getLayoutInflater().inflate(R.layout.dialog_pop_up, null);
+        dialog = new AlertDialog.Builder(this, R.style.AppTheme_CustomDialog)
+                .setView(view)
+                .create();
+        sharelv = (ListView) view.findViewById(R.id.share_lv);
+        FancyButton accept = (FancyButton) view.findViewById(R.id.accept_act);
+        FancyButton dismiss = (FancyButton) view.findViewById(R.id.dismiss_act);
+        accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(),
+                        "TiDs are:"+shareAdapter.getSelectedTIDs(), Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
+
+        dismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(),
+                        "TiDs are:"+shareAdapter.getSelectedTIDs(), Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
     }
 
 

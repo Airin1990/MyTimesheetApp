@@ -1,6 +1,7 @@
 package com.weijie.timesheetapp.activities;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -15,6 +16,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,6 +49,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import mehdi.sakout.fancybuttons.FancyButton;
 import okhttp3.Response;
 
 import static com.weijie.timesheetapp.network.Controller.AppEvent;
@@ -302,25 +305,59 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
     }
 
     private void showShareConfirmationDialog() {
-        final EditText emailEditText = new EditText(this);
-        emailEditText.setHint("Enter sharing email here");
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.share)
-                .setMessage(R.string.share_ts_msg)
-                .setView(emailEditText)
-                .setPositiveButton("Share", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        shareTimesheet();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .create();
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_share_form);
+        dialog.setTitle("Share This Timesheet");
+        final EditText editText = (EditText) dialog.findViewById(R.id.editText);
+        FancyButton share = (FancyButton) dialog.findViewById(R.id.share_act);
+        FancyButton revoke = (FancyButton) dialog.findViewById(R.id.revoke_act);
+        FancyButton cancel = (FancyButton) dialog.findViewById(R.id.cancel_act);
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (validEmail(editText.getText().toString())) {
+                    shareTimesheet();
+                    dialog.dismiss();
+                } else {
+                    editText.setError(getString(R.string.error_invalid_email));
+                }
+            }
+        });
+
+        revoke.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (validEmail(editText.getText().toString())) {
+                    revokeTimesheet();
+                    dialog.dismiss();
+                } else {
+                    editText.setError(getString(R.string.error_invalid_email));
+                }
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
         dialog.show();
+    }
+
+    private boolean validEmail(String s) {
+        if (s.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(s).matches())
+            return false;
+        else
+            return true;
     }
 
     private void shareTimesheet() {
         Response response = Controller.AppEvent(Controller.Action.SEND_SHARE,"",null);
+    }
+
+    private void revokeTimesheet() {
+        Response response = Controller.AppEvent(Controller.Action.REVOKE_SHARE,"",null);
     }
 
     private void showDeleteConfirmationDialog() {

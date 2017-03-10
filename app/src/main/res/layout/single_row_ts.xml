@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
+        android:buttonTint="@color/colorAccent"
         android:visibility="visible"
         android:id="@+id/ts_checkbox"
         />

@@ -15,12 +15,29 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.weijie.timesheetapp.activities.SummaryActivity">
 
-    <TextView
-        android:text="Summary Report"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date Range"
+        android:onClick="selectDateRange"
+        android:layout_alignParentTop="true"
+        android:id="@+id/select_date"/>
+
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:text="Generate Summary Report"
+        android:layout_alignBottom="@id/select_date"
+        android:layout_toRightOf="@id/select_date"
+        />
+
+    <TextView
+        android:text="Summary Report"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_below="@id/select_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:fontFamily="sans-serif"
         android:textStyle="bold"

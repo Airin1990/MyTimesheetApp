@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <TextView
+        android:text="Please Enter the Email:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:fontFamily="sans-serif-condensed"
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView10" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:layout_marginTop="20dp"
+        android:padding="5dp"
+        android:ems="10"
+        android:id="@+id/editText" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:id="@+id/share_act"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        fancy:fb_defaultColor="#7ab800"
+        fancy:fb_focusColor="#9bd823"
+        fancy:fb_iconPosition="left"
+        fancy:fb_radius="15dp"
+        fancy:fb_textFont="san-serif"
+        fancy:fb_text="Share"
+        fancy:fb_textColor="#FFFFFF">
+    </mehdi.sakout.fancybuttons.FancyButton>
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:id="@+id/revoke_act"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            fancy:fb_defaultColor="#D50000"
+            fancy:fb_focusColor="#F44336"
+            fancy:fb_iconPosition="left"
+            fancy:fb_radius="15dp"
+            fancy:fb_textFont="san-serif"
+            fancy:fb_text="Revoke"
+            fancy:fb_textColor="#FFFFFF">
+        </mehdi.sakout.fancybuttons.FancyButton>
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:id="@+id/cancel_act"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            fancy:fb_defaultColor="#78909C"
+            fancy:fb_focusColor="#B0BEC5"
+            fancy:fb_iconPosition="left"
+            fancy:fb_radius="15dp"
+            fancy:fb_textFont="san-serif"
+            fancy:fb_text="Cancel"
+            fancy:fb_textColor="#FFFFFF">
+        </mehdi.sakout.fancybuttons.FancyButton>
+
+
+    </LinearLayout>
+</LinearLayout>
