@@ -8,13 +8,15 @@ public class Timesheet {
     private long TID;
     private String name;
     private long authorID;
+    private String authorName;
     private int shareMode;
     private int shareStatus;
 
-    public Timesheet(long TID, String name, long authorID, int shareMode, int shareStatus) {
+    public Timesheet(long TID, String name, long authorID, String authorName, int shareMode, int shareStatus) {
         this.TID = TID;
         this.name = name;
         this.authorID = authorID;
+        this.authorName = authorName;
         this.shareMode = shareMode;
         this.shareStatus = shareStatus;
     }
@@ -41,6 +43,14 @@ public class Timesheet {
 
     public void setAuthorID(long authorID) {
         this.authorID = authorID;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public int getShareStatus() {

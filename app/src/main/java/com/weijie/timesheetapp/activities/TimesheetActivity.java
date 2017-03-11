@@ -58,7 +58,8 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
 
     private static final String TAG = TimesheetActivity.class.getSimpleName();
     private static final int RECORD_LOADER = 0;
-    boolean shouldExecuteOnResume;
+    private boolean shouldExecuteOnResume;
+    private long currentTID;
 
     RecordCursorAdapter mRecordCursorAdapter;
     ListView listView;
@@ -89,6 +90,8 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        currentTID = getIntent().getLongExtra("TID", 0);
+        Log.d(TAG, ""+currentTID);
 
         listView = (ListView) findViewById(R.id.ts_listview);
         View emptyView = getLayoutInflater().inflate(R.layout.empty_listview, null);

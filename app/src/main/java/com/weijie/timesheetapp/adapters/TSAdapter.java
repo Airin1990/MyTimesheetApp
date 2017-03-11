@@ -1,6 +1,7 @@
 package com.weijie.timesheetapp.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.weijie.timesheetapp.R;
+import com.weijie.timesheetapp.activities.TimesheetActivity;
 import com.weijie.timesheetapp.models.Timesheet;
 
 import java.util.ArrayList;
@@ -33,9 +35,11 @@ public class TSAdapter extends ArrayAdapter<Object> {
     private List<Object> tslist;
     private boolean[] isChecked;
     boolean showCheckbox;
+    Context context;
 
     public TSAdapter(Context context, List<Object> list, boolean showCheckbox) {
         super(context, R.layout.single_row_ts, list);
+        this.context = context;
         tslist = list;
         this.showCheckbox = showCheckbox;
         isChecked = new boolean[tslist.size()];
@@ -106,7 +110,7 @@ public class TSAdapter extends ArrayAdapter<Object> {
                 TextView author = (TextView) convertView.findViewById(R.id.ts_author);
                 ImageView arrow = (ImageView) convertView.findViewById(R.id.ts_arrow);
                 name.setText(ts.getName());
-                author.setText(String.valueOf(ts.getAuthorID()));
+                author.setText(ts.getAuthorName());
                 cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -120,6 +124,15 @@ public class TSAdapter extends ArrayAdapter<Object> {
                 } else {
                     cb.setVisibility(View.INVISIBLE);
                     arrow.setVisibility(View.VISIBLE);
+                    convertView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(context, TimesheetActivity.class);
+                            long tid = ((Timesheet) tslist.get(position)).getTID();
+                            intent.putExtra("TID", tid);
+                            context.startActivity(intent);
+                        }
+                    });
                 }
                 break;
         }

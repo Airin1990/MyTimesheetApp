@@ -56,6 +56,7 @@ public class HomepageActivity extends AppCompatActivity
     ListView sharelv;
 
     private long userId;
+    private String userName;
     private List<Timesheet> tsList;
     private List<Object> pendlingList;
     private List<Object> adapterList;
@@ -113,7 +114,8 @@ public class HomepageActivity extends AppCompatActivity
         userPic = (ProfilePictureView) hView.findViewById(R.id.profile_pic_view);
 
         if ((profile = Profile.getCurrentProfile()) != null) {
-            username_tv.setText(profile.getName());
+            userName = profile.getName();
+            username_tv.setText(userName);
             userPic.setProfileId(profile.getId());
             // retrieve user info by fbid
             Thread thread = new Thread(new Runnable() {
@@ -191,6 +193,7 @@ public class HomepageActivity extends AppCompatActivity
                             userId = userjson.getLong("uid");
                             final String firstName = userjson.getString("firstName");
                             final String lastName = userjson.getString("lastName");
+                            userName = firstName+" "+lastName;
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -227,16 +230,23 @@ public class HomepageActivity extends AppCompatActivity
         Thread tsthread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Response resp = Controller.AppEvent(Controller.Action.DISPLAY_TS_LIST, "?uid="+String.valueOf(userId), null);
+                Response resp = Controller.AppEvent(Controller.Action.DISPLAY_TS_LIST, "/all?uid="+String.valueOf(userId), null);
                 JSONArray jsonArray;
                 try {
                     String json = resp.body().string();
                     jsonArray = new JSONArray(json);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject temp = (JSONObject) jsonArray.get(i);
+                        String author;
+                        if (temp.getInt("shareMode") == -1) {
+                            author = userName;
+                        } else {
+                            author = temp.getString("firstName") +" "+ temp.getString("lastName");
+                        }
                         Timesheet tsnew = new Timesheet(temp.getLong("tid"),
                                 temp.getString("tName"),
                                 temp.getLong("uid"),
+                                author,
                                 temp.getInt("shareMode"),
                                 temp.getInt("shareStatus"));
                         tsList.add(tsnew);
@@ -252,18 +262,48 @@ public class HomepageActivity extends AppCompatActivity
                     public void run() {
                         adapterList = new ArrayList<>();
                         pendlingList = new ArrayList<>();
-                        pendlingList.addAll(tsList);
-                        adapterList.add(new String("My Timesheet"));
-                        adapterList.addAll(tsList);
-                        adapterList.add(new String("Shared Timesheet"));
-                        adapterList.addAll(tsList);
-                        adapterList.add(new String("Revoked Timesheet"));
-                        adapterList.addAll(tsList);
-                        shareAdapter = new TSAdapter(getApplicationContext(), pendlingList, true);
-                        sharelv.setAdapter(shareAdapter);
-                        tsAdapter = new TSAdapter(getApplicationContext(), adapterList, showCheckbox);
+                        List<Timesheet> list1 = new ArrayList<>();
+                        List<Timesheet> list2 = new ArrayList<>();
+                        List<Timesheet> list3 = new ArrayList<>();
+                        for (Timesheet t: tsList) {
+                            switch (t.getShareStatus()) {
+                                case -1:
+                                    list1.add(t);
+                                    break;
+                                case 0:
+                                    pendlingList.add(t);
+                                    break;
+                                case 1:
+                                    list2.add(t);
+                                    break;
+                                case 2:
+                                    list3.add(t);
+                                    break;
+                            }
+                        }
+                        // Show pop up screen
+                        if (!pendlingList.isEmpty()) {
+                            shareAdapter = new TSAdapter(getApplicationContext(), pendlingList, true);
+                            sharelv.setAdapter(shareAdapter);
+                            dialog.show();
+                        }
+                        // Show Homepage list 3 sections
+                        if (!list1.isEmpty()) {
+                            adapterList.add("My Timesheet");
+                            adapterList.addAll(list1);
+                        }
+                        if (!list2.isEmpty()) {
+                            adapterList.add("Shared Timesheet");
+                            adapterList.addAll(list2);
+                        }
+                        if (!list3.isEmpty()) {
+                            adapterList.add("Revoked Timesheet");
+                            adapterList.addAll(list3);
+                        }
+
+                        tsAdapter = new TSAdapter(HomepageActivity.this, adapterList, showCheckbox);
                         listView.setAdapter(tsAdapter);
-                        dialog.show();
+
                     }
                 });
             }
