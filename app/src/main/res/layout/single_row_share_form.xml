@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <Button
+        android:id="@+id/revoke_sign"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:text="\u2717"
+        android:textStyle="bold"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@android:color/holo_red_dark"
+        android:background="@android:color/transparent"
+        android:backgroundTint="@android:color/darker_gray"
+        android:foreground="?android:selectableItemBackground"/>
+
+    <Switch
+        android:id="@+id/mode_select"
+        android:layout_marginRight="20dp"
+        android:buttonTint="@android:color/holo_green_dark"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:textOn="Edit"
+        android:textOff="View Only"
+        android:layout_toLeftOf="@id/revoke_sign"
+
+        />
+
+    <TextView
+        android:id="@+id/share_username"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginRight="20dp"
+        android:text="User Name"
+        android:textColor="@android:color/black"
+        android:layout_toLeftOf="@id/mode_select"
+        android:gravity="center_vertical"/>
+
+</RelativeLayout>

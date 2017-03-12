@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fancy="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@drawable/rounded_corner_dialog"
     android:padding="10dp">
 
     <TextView
@@ -15,14 +16,94 @@
         android:layout_height="wrap_content"
         android:id="@+id/textView10" />
 
-    <EditText
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/holo_green_dark"
+        android:layout_marginTop="20dp"
+        android:padding="5dp">
+    </View>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:backgroundTint="@android:color/holo_green_light"
+            android:layout_height="match_parent"
+            android:layout_marginRight="20dp"
+            android:gravity="bottom"
+            android:inputType="textEmailAddress"
+            android:ems="10"
+            android:layout_gravity="center_vertical"
+            android:hint="Email"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View\nOnly"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"/>
+
+        <Switch
+            android:id="@+id/mode_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textOn="Edit"
+            android:textOff="View\nOnly"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"/>
+
+        <Button
+            android:id="@+id/add_share"
+            android:layout_width="30dp"
+            android:layout_marginLeft="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_height="40dp"
+            android:text="\u271A"
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:textColor="@android:color/holo_green_dark"
+            />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/holo_green_dark"
+        android:layout_marginTop="5dp"
+        android:padding="5dp">
+    </View>
+
+    <ListView
+        android:id="@+id/user_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:layout_marginTop="20dp"
-        android:padding="5dp"
-        android:ems="10"
-        android:id="@+id/editText" />
+        android:divider="@color/lighter_gray"
+        android:dividerHeight="1dp"
+        android:layout_marginTop="20dp">
+
+    </ListView>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,7 +112,7 @@
         android:orientation="horizontal">
 
     <mehdi.sakout.fancybuttons.FancyButton
-        android:id="@+id/share_act"
+        android:id="@+id/confirm_act"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
@@ -45,48 +126,9 @@
         fancy:fb_iconPosition="left"
         fancy:fb_radius="15dp"
         fancy:fb_textFont="san-serif"
-        fancy:fb_text="Share"
+        fancy:fb_text="Confirm"
         fancy:fb_textColor="#FFFFFF">
     </mehdi.sakout.fancybuttons.FancyButton>
-
-        <mehdi.sakout.fancybuttons.FancyButton
-            android:id="@+id/revoke_act"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            fancy:fb_defaultColor="#D50000"
-            fancy:fb_focusColor="#F44336"
-            fancy:fb_iconPosition="left"
-            fancy:fb_radius="15dp"
-            fancy:fb_textFont="san-serif"
-            fancy:fb_text="Revoke"
-            fancy:fb_textColor="#FFFFFF">
-        </mehdi.sakout.fancybuttons.FancyButton>
-
-        <mehdi.sakout.fancybuttons.FancyButton
-            android:id="@+id/cancel_act"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            fancy:fb_defaultColor="#78909C"
-            fancy:fb_focusColor="#B0BEC5"
-            fancy:fb_iconPosition="left"
-            fancy:fb_radius="15dp"
-            fancy:fb_textFont="san-serif"
-            fancy:fb_text="Cancel"
-            fancy:fb_textColor="#FFFFFF">
-        </mehdi.sakout.fancybuttons.FancyButton>
-
 
     </LinearLayout>
 </LinearLayout>

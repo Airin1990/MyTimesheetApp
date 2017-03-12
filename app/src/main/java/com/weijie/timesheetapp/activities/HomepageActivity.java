@@ -351,26 +351,6 @@ public class HomepageActivity extends AppCompatActivity
         });
     }
 
-    private void updateTSList(List<Long> selectedTIDs, int status) {
-        if (selectedTIDs.isEmpty()) {
-            return;
-        }
-
-        JSONObject jsonObject = new JSONObject();
-        String tidStr = "";
-        for (int i = 0; i < selectedTIDs.size(); i++) {
-            if (i == 0) tidStr += String.valueOf(selectedTIDs.get(i));
-            else tidStr+=","+String.valueOf(selectedTIDs.get(i));
-        }
-        try {
-            jsonObject.put("uid", userId);
-            jsonObject.put("tids", tidStr);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

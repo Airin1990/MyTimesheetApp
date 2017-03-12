@@ -1,7 +1,6 @@
 package com.weijie.timesheetapp.activities;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -10,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
@@ -21,10 +22,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Switch;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,8 +39,10 @@ import com.google.gson.internal.bind.SqlDateTypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.weijie.timesheetapp.R;
 import com.weijie.timesheetapp.adapters.RecordCursorAdapter;
+import com.weijie.timesheetapp.adapters.ShareUserAdapter;
 import com.weijie.timesheetapp.database.TSContract;
 import com.weijie.timesheetapp.models.Record;
+import com.weijie.timesheetapp.models.User;
 import com.weijie.timesheetapp.network.Controller;
 
 import java.lang.reflect.Type;
@@ -46,6 +51,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -64,6 +70,7 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
     RecordCursorAdapter mRecordCursorAdapter;
     ListView listView;
     Spinner spinner;
+    android.support.v7.app.AlertDialog dialog;
     ProgressDialog loading;
 
     @Override
@@ -308,44 +315,51 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
     }
 
     private void showShareConfirmationDialog() {
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_share_form);
-        dialog.setTitle("Share This Timesheet");
-        final EditText editText = (EditText) dialog.findViewById(R.id.editText);
-        FancyButton share = (FancyButton) dialog.findViewById(R.id.share_act);
-        FancyButton revoke = (FancyButton) dialog.findViewById(R.id.revoke_act);
-        FancyButton cancel = (FancyButton) dialog.findViewById(R.id.cancel_act);
-        share.setOnClickListener(new View.OnClickListener() {
+
+        List<User> userList = getShareUserList();
+
+        View view = getLayoutInflater().inflate(R.layout.dialog_share_form, null);
+        dialog = new android.support.v7.app.AlertDialog.Builder(this, R.style.AppTheme_CustomDialog)
+                .setView(view)
+                .create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        final EditText editText = (EditText) view.findViewById(R.id.editText);
+        FancyButton confirm = (FancyButton) view.findViewById(R.id.confirm_act);
+        Button addBt = (Button) view.findViewById(R.id.add_share);
+        final Switch modeSwitch = (Switch) view.findViewById(R.id.mode_switch);
+        ListView userlv = (ListView) view.findViewById(R.id.user_list);
+        ShareUserAdapter shareUserAdapter = new ShareUserAdapter(this, userList, currentTID);
+        userlv.setAdapter(shareUserAdapter);
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    dialog.dismiss();
+            }
+        });
+
+        addBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (validEmail(editText.getText().toString())) {
-                    shareTimesheet();
-                    dialog.dismiss();
-                } else {
+                    String email = editText.getText().toString();
+                    boolean mode = modeSwitch.isSelected();
+                    shareTimesheet(email, mode);
+                }
+                else {
                     editText.setError(getString(R.string.error_invalid_email));
                 }
             }
         });
 
-        revoke.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (validEmail(editText.getText().toString())) {
-                    revokeTimesheet();
-                    dialog.dismiss();
-                } else {
-                    editText.setError(getString(R.string.error_invalid_email));
-                }
-            }
-        });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
         dialog.show();
+    }
+
+    private List<User> getShareUserList() {
+        List<User> list = new ArrayList<>();
+        list.add(new User(123,"weijie","zhu","weijeizhu1990@gmail.com",1,2));
+        list.add(new User(234,"ou","jy","oyjy@yahoo.com",0,1));
+        return list;
     }
 
     private boolean validEmail(String s) {
@@ -355,12 +369,8 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
             return true;
     }
 
-    private void shareTimesheet() {
-        Response response = Controller.AppEvent(Controller.Action.UPDATE_SHARE,"",null);
-    }
-
-    private void revokeTimesheet() {
-        Response response = Controller.AppEvent(Controller.Action.UPDATE_SHARE,"",null);
+    private void shareTimesheet(String email, boolean mode) {
+        Response response = Controller.AppEvent(Controller.Action.ADD_SHARE,"",null);
     }
 
     private void showDeleteConfirmationDialog() {
