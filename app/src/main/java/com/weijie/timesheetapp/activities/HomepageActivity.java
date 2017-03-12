@@ -65,6 +65,7 @@ public class HomepageActivity extends AppCompatActivity
     private List<Timesheet> pendlingList;
     private List<Object> adapterList;
     private boolean hasPendingShare = true;
+    private boolean firstTimeStart = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -289,8 +290,11 @@ public class HomepageActivity extends AppCompatActivity
                         if (!pendlingList.isEmpty()) {
                             shareAdapter = new PendingAdapter(HomepageActivity.this, pendlingList, userId);
                             sharelv.setAdapter(shareAdapter);
-                            if (!dialog.isShowing())
+                            if (!dialog.isShowing() && firstTimeStart) {
                                 dialog.show();
+                                firstTimeStart = false;
+                            }
+
                         }
                         // Show Homepage list 3 sections
                         if (!list1.isEmpty()) {
@@ -323,7 +327,7 @@ public class HomepageActivity extends AppCompatActivity
         super.onPostResume();
         if (userId > 0) {
             populateTimesheetInfo();
-            if (hasPendingShare) {
+            if (hasPendingShare && firstTimeStart) {
                 showShareReminder();
             }
         }

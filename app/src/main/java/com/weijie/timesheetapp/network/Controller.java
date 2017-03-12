@@ -26,6 +26,7 @@ public class Controller {
         public static final int GET_SUMMARY = 1004;
         public static final int GET_USER_PROFILE = 1005;
         public static final int GET_USER_SHARE_STATUS = 1006;
+        public static final int GET_SHARE_USER_LIST = 1007;
 
         public static final int INSERT_RECORD = 2001;
         public static final int INSERT_NEW_TS = 2002;
@@ -62,6 +63,9 @@ public class Controller {
                 break;
             case Action.GET_USER_SHARE_STATUS:
                 break;
+            case Action.GET_SHARE_USER_LIST:
+                resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + SHEET_URL+ param);
+                break;
             case Action.INSERT_RECORD:
                 resp = MyApplication.getInstance().getHttpGateway().doPost(BASE_URL + RECORD_URL, param, json);
                 break;
@@ -71,6 +75,7 @@ public class Controller {
                 resp = MyApplication.getInstance().getHttpGateway().doPost(BASE_URL + USER_URL, param, json);
                 break;
             case Action.ADD_SHARE:
+                resp = MyApplication.getInstance().getHttpGateway().doPost(BASE_URL + SHARE_URL, param, json);
                 break;
             case Action.UPDATE_RECORD:
                 resp = MyApplication.getInstance().getHttpGateway().doPut(BASE_URL + RECORD_URL, "/"+param, json);

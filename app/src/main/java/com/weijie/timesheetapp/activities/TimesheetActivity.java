@@ -45,6 +45,11 @@ import com.weijie.timesheetapp.models.Record;
 import com.weijie.timesheetapp.models.User;
 import com.weijie.timesheetapp.network.Controller;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -66,12 +71,15 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
     private static final int RECORD_LOADER = 0;
     private boolean shouldExecuteOnResume;
     private long currentTID;
+    List<User> userList;
 
     RecordCursorAdapter mRecordCursorAdapter;
     ListView listView;
     Spinner spinner;
     android.support.v7.app.AlertDialog dialog;
     ProgressDialog loading;
+    ListView userlv;
+    ShareUserAdapter shareUserAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -316,8 +324,6 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
 
     private void showShareConfirmationDialog() {
 
-        List<User> userList = getShareUserList();
-
         View view = getLayoutInflater().inflate(R.layout.dialog_share_form, null);
         dialog = new android.support.v7.app.AlertDialog.Builder(this, R.style.AppTheme_CustomDialog)
                 .setView(view)
@@ -327,8 +333,9 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
         FancyButton confirm = (FancyButton) view.findViewById(R.id.confirm_act);
         Button addBt = (Button) view.findViewById(R.id.add_share);
         final Switch modeSwitch = (Switch) view.findViewById(R.id.mode_switch);
-        ListView userlv = (ListView) view.findViewById(R.id.user_list);
-        ShareUserAdapter shareUserAdapter = new ShareUserAdapter(this, userList, currentTID);
+        userlv = (ListView) view.findViewById(R.id.user_list);
+        userList = getShareUserList();
+        shareUserAdapter = new ShareUserAdapter(this, userList, currentTID);
         userlv.setAdapter(shareUserAdapter);
 
         confirm.setOnClickListener(new View.OnClickListener() {
@@ -343,8 +350,17 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
             public void onClick(View view) {
                 if (validEmail(editText.getText().toString())) {
                     String email = editText.getText().toString();
-                    boolean mode = modeSwitch.isSelected();
-                    shareTimesheet(email, mode);
+                    boolean mode = modeSwitch.isChecked();
+                    int ret = shareTimesheet(email, mode);
+                    if (ret == 1) {
+                        editText.setError("This user is already shared");
+                    } else if (ret == 2) {
+                        editText.setError("This Email is not registered");
+                    } else {
+                        userList = getShareUserList();
+                        shareUserAdapter = new ShareUserAdapter(TimesheetActivity.this, userList, currentTID);
+                        userlv.setAdapter(shareUserAdapter);
+                    }
                 }
                 else {
                     editText.setError(getString(R.string.error_invalid_email));
@@ -356,9 +372,42 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
     }
 
     private List<User> getShareUserList() {
-        List<User> list = new ArrayList<>();
-        list.add(new User(123,"weijie","zhu","weijeizhu1990@gmail.com",1,2));
-        list.add(new User(234,"ou","jy","oyjy@yahoo.com",0,1));
+        final List<User> list = new ArrayList<>();
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Response resp = Controller.AppEvent(Controller.Action.GET_SHARE_USER_LIST, "/ulist?tid="+currentTID, null);
+                JSONArray jsonArray;
+                try {
+                    String json = resp.body().string();
+                    jsonArray = new JSONArray(json);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject temp = (JSONObject) jsonArray.get(i);
+                        User user = new User(temp.getLong("uid"),
+                                temp.getString("firstName"),
+                                temp.getString("lastName"),
+                                temp.optString("email",""),
+                                temp.getInt("shareMode"),
+                                temp.getInt("shareStatus"));
+                        list.add(user);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        thread.start();
+
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return list;
     }
 
@@ -369,8 +418,69 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
             return true;
     }
 
-    private void shareTimesheet(String email, boolean mode) {
-        Response response = Controller.AppEvent(Controller.Action.ADD_SHARE,"",null);
+    private int shareTimesheet(final String email, final boolean mode) {
+        //find if the user is in userlist
+        for (User u: userList) {
+            if (u.getEmail().equals(email)) return 1;
+        }
+        //Query if user is in db
+        final long[] share_uid = new long[1];
+        Thread thread1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Response resp = Controller.AppEvent(Controller.Action.GET_USER_PROFILE, "?email=" + email, null);
+                try {
+                    String json = resp.body().string();
+                    if (!json.isEmpty()) {
+                        JSONObject jsonObject = new JSONObject(json);
+                        share_uid[0] = jsonObject.getLong("uid");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        thread1.start();
+        try {
+            thread1.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (!(share_uid[0] > 0)) {
+            return 2;
+        }
+
+        //Post user share relation
+
+        Thread thread2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("uid", share_uid[0]);
+                    json.put("tid", currentTID);
+                    json.put("shareMode", mode);
+                    json.put("shareStatus", TSContract.ShareEntry.STATUS_PENDING);
+                    Response response = Controller.AppEvent(Controller.Action.ADD_SHARE, "", json);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        thread2.start();
+        try {
+            thread2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+
     }
 
     private void showDeleteConfirmationDialog() {
