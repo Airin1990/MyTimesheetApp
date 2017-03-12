@@ -398,13 +398,15 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
                     jsonArray = new JSONArray(json);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject temp = (JSONObject) jsonArray.get(i);
-                        User user = new User(temp.getLong("uid"),
-                                temp.getString("firstName"),
-                                temp.getString("lastName"),
-                                temp.optString("email",""),
-                                temp.getInt("shareMode"),
-                                temp.getInt("shareStatus"));
-                        list.add(user);
+                        if (temp.getInt("shareStatus") != TSContract.ShareEntry.STATUS_REVOKED) {
+                            User user = new User(temp.getLong("uid"),
+                                    temp.getString("firstName"),
+                                    temp.getString("lastName"),
+                                    temp.optString("email", ""),
+                                    temp.getInt("shareMode"),
+                                    temp.getInt("shareStatus"));
+                            list.add(user);
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
