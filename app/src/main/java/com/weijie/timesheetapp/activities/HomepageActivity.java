@@ -1,6 +1,9 @@
 package com.weijie.timesheetapp.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -24,6 +27,7 @@ import com.facebook.login.widget.ProfilePictureView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.weijie.timesheetapp.R;
+import com.weijie.timesheetapp.adapters.PendingAdapter;
 import com.weijie.timesheetapp.adapters.TSAdapter;
 import com.weijie.timesheetapp.models.Timesheet;
 import com.weijie.timesheetapp.network.Controller;
@@ -49,7 +53,7 @@ public class HomepageActivity extends AppCompatActivity
     ProfilePictureView userPic;
     ListView listView;
     TSAdapter tsAdapter;
-    TSAdapter shareAdapter;
+    PendingAdapter shareAdapter;
     boolean showCheckbox = false;
     FloatingActionButton fab;
     AlertDialog dialog;
@@ -58,7 +62,7 @@ public class HomepageActivity extends AppCompatActivity
     private long userId;
     private String userName;
     private List<Timesheet> tsList;
-    private List<Object> pendlingList;
+    private List<Timesheet> pendlingList;
     private List<Object> adapterList;
     private boolean hasPendingShare = true;
 
@@ -283,9 +287,10 @@ public class HomepageActivity extends AppCompatActivity
                         }
                         // Show pop up screen
                         if (!pendlingList.isEmpty()) {
-                            shareAdapter = new TSAdapter(getApplicationContext(), pendlingList, true);
+                            shareAdapter = new PendingAdapter(HomepageActivity.this, pendlingList, userId);
                             sharelv.setAdapter(shareAdapter);
-                            dialog.show();
+                            if (!dialog.isShowing())
+                                dialog.show();
                         }
                         // Show Homepage list 3 sections
                         if (!list1.isEmpty()) {
@@ -329,26 +334,40 @@ public class HomepageActivity extends AppCompatActivity
         dialog = new AlertDialog.Builder(this, R.style.AppTheme_CustomDialog)
                 .setView(view)
                 .create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                populateTimesheetInfo();
+            }
+        });
         sharelv = (ListView) view.findViewById(R.id.share_lv);
-        FancyButton accept = (FancyButton) view.findViewById(R.id.accept_act);
-        FancyButton dismiss = (FancyButton) view.findViewById(R.id.dismiss_act);
-        accept.setOnClickListener(new View.OnClickListener() {
+        FancyButton cancel = (FancyButton) view.findViewById(R.id.ccl_act);
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),
-                        "TiDs are:"+shareAdapter.getSelectedTIDs(), Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
+    }
 
-        dismiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),
-                        "TiDs are:"+shareAdapter.getSelectedTIDs(), Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }
-        });
+    private void updateTSList(List<Long> selectedTIDs, int status) {
+        if (selectedTIDs.isEmpty()) {
+            return;
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        String tidStr = "";
+        for (int i = 0; i < selectedTIDs.size(); i++) {
+            if (i == 0) tidStr += String.valueOf(selectedTIDs.get(i));
+            else tidStr+=","+String.valueOf(selectedTIDs.get(i));
+        }
+        try {
+            jsonObject.put("uid", userId);
+            jsonObject.put("tids", tidStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 

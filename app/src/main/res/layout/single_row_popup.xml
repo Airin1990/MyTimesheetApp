@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:selectableItemBackground">
+
+    <Button
+        android:id="@+id/cross_sign"
+        android:layout_width="30dp"
+        android:layout_height="40dp"
+        android:text="\u2717"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@android:color/holo_red_dark"
+        android:background="@android:color/transparent"
+        android:backgroundTint="@android:color/darker_gray"
+        android:foreground="?android:selectableItemBackground"/>
+
+    <Button
+        android:id="@+id/tick_sign"
+        android:layout_width="30dp"
+        android:layout_height="40dp"
+        android:text="\u2713"
+        android:layout_toLeftOf="@id/cross_sign"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@android:color/holo_green_dark"
+        android:background="@android:color/transparent"
+        android:backgroundTint="@android:color/darker_gray"
+        android:foreground="?android:selectableItemBackground"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:layout_toLeftOf="@id/tick_sign">
+
+        <TextView
+            android:text="Timesheet"
+            android:layout_marginLeft="10dp"
+            android:textColor="@android:color/black"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_width="0dp"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent"
+            android:id="@+id/pop_tname"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/pop_uname"
+            android:text="Author"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginRight="10dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_width="0dp"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</RelativeLayout>

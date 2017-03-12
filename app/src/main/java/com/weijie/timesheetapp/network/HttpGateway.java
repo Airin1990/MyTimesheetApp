@@ -78,4 +78,19 @@ public final class HttpGateway {
 
         return response;
     }
+
+    public Response doDelete(String deleteUrl, String param) {
+        Request request = new Request.Builder()
+                .url(deleteUrl+param)
+                .delete()
+                .build();
+
+        Response response = null;
+        try {
+            response = okHttpClient.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
 }

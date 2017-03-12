@@ -356,11 +356,11 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
     }
 
     private void shareTimesheet() {
-        Response response = Controller.AppEvent(Controller.Action.SEND_SHARE,"",null);
+        Response response = Controller.AppEvent(Controller.Action.UPDATE_SHARE,"",null);
     }
 
     private void revokeTimesheet() {
-        Response response = Controller.AppEvent(Controller.Action.REVOKE_SHARE,"",null);
+        Response response = Controller.AppEvent(Controller.Action.UPDATE_SHARE,"",null);
     }
 
     private void showDeleteConfirmationDialog() {
