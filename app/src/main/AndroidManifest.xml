@@ -44,6 +44,7 @@
         <activity
             android:name=".activities.TimesheetActivity"
             android:label="@string/title_activity_timesheet"
+            android:launchMode="singleTop"
             android:configChanges="keyboardHidden|orientation|keyboard|screenSize|screenLayout"
             android:parentActivityName=".activities.HomepageActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -54,6 +55,7 @@
         <activity
             android:name=".activities.EditorActivity"
             android:label="@string/title_activity_editor"
+            android:launchMode="singleTop"
             android:configChanges="keyboardHidden|orientation|keyboard|screenSize|screenLayout"
             android:parentActivityName=".activities.TimesheetActivity"
             android:theme="@style/AppTheme.NoActionBar">

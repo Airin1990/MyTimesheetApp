@@ -128,8 +128,13 @@ public class TSAdapter extends ArrayAdapter<Object> {
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(context, TimesheetActivity.class);
-                            long tid = ((Timesheet) tslist.get(position)).getTID();
+                            Timesheet data = (Timesheet) tslist.get(position);
+                            long tid = data.getTID();
+                            int mode = data.getShareMode();
+                            int status = data.getShareStatus();
                             intent.putExtra("TID", tid);
+                            intent.putExtra("mode", mode);
+                            intent.putExtra("status", status);
                             context.startActivity(intent);
                         }
                     });

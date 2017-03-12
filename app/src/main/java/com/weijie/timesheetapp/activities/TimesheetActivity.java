@@ -71,7 +71,9 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
     private static final int RECORD_LOADER = 0;
     private boolean shouldExecuteOnResume;
     private long currentTID;
-    List<User> userList;
+    private List<User> userList;
+    private int mode;
+    private int status;
 
     RecordCursorAdapter mRecordCursorAdapter;
     ListView listView;
@@ -80,6 +82,7 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
     ProgressDialog loading;
     ListView userlv;
     ShareUserAdapter shareUserAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +110,16 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
 
         currentTID = getIntent().getLongExtra("TID", 0);
         Log.d(TAG, ""+currentTID);
+        mode = getIntent().getIntExtra("mode", TSContract.ShareEntry.MODE_EDIT);
+        status = getIntent().getIntExtra("status", TSContract.ShareEntry.STATUS_ACCEPTED);
+
+        if (mode != TSContract.ShareEntry.MODE_VIEWONLY) {
+            setTitle("Edit Timesheet");
+            fab.setVisibility(View.VISIBLE);
+        } else {
+            setTitle("View Only Mode");
+            fab.setVisibility(View.GONE);
+        }
 
         listView = (ListView) findViewById(R.id.ts_listview);
         View emptyView = getLayoutInflater().inflate(R.layout.empty_listview, null);
@@ -278,7 +291,8 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.ts_menu, menu);
+        if (mode != TSContract.ShareEntry.MODE_VIEWONLY)
+            getMenuInflater().inflate(R.menu.ts_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -463,7 +477,7 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
                 try {
                     json.put("uid", share_uid[0]);
                     json.put("tid", currentTID);
-                    json.put("shareMode", mode);
+                    json.put("shareMode", mode? TSContract.ShareEntry.MODE_EDIT: TSContract.ShareEntry.MODE_VIEWONLY);
                     json.put("shareStatus", TSContract.ShareEntry.STATUS_PENDING);
                     Response response = Controller.AppEvent(Controller.Action.ADD_SHARE, "", json);
                 } catch (JSONException e) {
@@ -538,7 +552,8 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
         c.moveToPosition(i);
 
         Intent intent = new Intent(this, EditorActivity.class);
-        intent.putExtra("mode", 0);
+        intent.putExtra("mode", mode);
+        intent.putExtra("editMode", 0);
         intent.putExtra("rid", c.getString(c.getColumnIndex(BaseColumns._ID)));
         intent.putExtra("date", c.getString(c.getColumnIndex(TSContract.RecordEntry.COLUMN_DATE)));
         intent.putExtra("s",c.getString(c.getColumnIndex(TSContract.RecordEntry.COLUMN_START_TIME)));

@@ -126,7 +126,7 @@
         fancy:fb_iconPosition="left"
         fancy:fb_radius="15dp"
         fancy:fb_textFont="san-serif"
-        fancy:fb_text="Confirm"
+        fancy:fb_text="Back To Timesheet"
         fancy:fb_textColor="#FFFFFF">
     </mehdi.sakout.fancybuttons.FancyButton>
 

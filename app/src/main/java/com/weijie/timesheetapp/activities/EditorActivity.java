@@ -17,6 +17,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.weijie.timesheetapp.R;
+import com.weijie.timesheetapp.database.TSContract;
 import com.weijie.timesheetapp.network.Controller;
 
 import org.json.JSONException;
@@ -40,6 +41,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     Button button;
     EditText comments;
     int editMode = 0;
+    private int mode;
     String record_ID;
 
     DatePickerDialog mDatePicker;
@@ -79,7 +81,17 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         button = (Button) findViewById(R.id.cal_button);
         comments = (EditText) findViewById(R.id.comment_edit);
 
-        editMode = getIntent().getIntExtra("mode", 1);
+        mode = getIntent().getIntExtra("mode", TSContract.ShareEntry.MODE_EDIT);
+
+        if (mode != TSContract.ShareEntry.MODE_VIEWONLY) {
+            setTitle("Edit Mode");
+        } else {
+            setTitle("View Only Mode");
+            fab.setVisibility(View.GONE);
+            fab2.setVisibility(View.GONE);
+        }
+
+        editMode = getIntent().getIntExtra("editMode", 1);
         if (editMode == 1) {
             populateDefaultValue();
         } else {
@@ -103,8 +115,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void saveRecord() {
-
-
         Thread schedule = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -153,19 +163,28 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     private void populateDefaultValue() {
         date.setText(df.format(new Date()));
         date.setInputType(InputType.TYPE_NULL);
-        date.setOnClickListener(this);
+        if (mode != TSContract.ShareEntry.MODE_VIEWONLY)
+            date.setOnClickListener(this);
         start_time.setText("08:00");
         start_time.setInputType(InputType.TYPE_NULL);
-        start_time.setOnClickListener(this);
+        if (mode != TSContract.ShareEntry.MODE_VIEWONLY)
+            start_time.setOnClickListener(this);
         end_time.setText("17:00");
         end_time.setInputType(InputType.TYPE_NULL);
-        end_time.setOnClickListener(this);
+        if (mode != TSContract.ShareEntry.MODE_VIEWONLY)
+            end_time.setOnClickListener(this);
         break_time.setText("01:00");
         break_time.setInputType(InputType.TYPE_NULL);
-        break_time.setOnClickListener(this);
-        work_time.setEnabled(false);
+        if (mode != TSContract.ShareEntry.MODE_VIEWONLY)
+            break_time.setOnClickListener(this);
+        work_time.setInputType(InputType.TYPE_NULL);
         work_time.setText("08:00");
-        button.setOnClickListener(this);
+        if (mode != TSContract.ShareEntry.MODE_VIEWONLY)
+            button.setOnClickListener(this);
+        else
+            button.setEnabled(false);
+        if (mode == TSContract.ShareEntry.MODE_VIEWONLY)
+            comments.setInputType(InputType.TYPE_NULL);
     }
 
     @Override
