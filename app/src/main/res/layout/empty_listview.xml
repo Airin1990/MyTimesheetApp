@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/pic_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_face_black_48dp"
+        android:layout_centerInParent="true"
+        android:alpha="0.8"
+        android:scaleX="2"
+        android:scaleY="2"/>
+
     <TextView
+        android:id="@+id/empty_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Please add your first record\nto the timesheet..."
-        android:layout_centerVertical="true"
+        android:layout_marginTop="30dp"
+        android:text="Sorry, there is no content\nto display..."
+        android:layout_below="@id/pic_view"
         android:layout_centerHorizontal="true" />
+
+
 
 </RelativeLayout>

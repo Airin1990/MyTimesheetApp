@@ -113,10 +113,10 @@ public class ShareUserAdapter extends ArrayAdapter<User> {
                 public void onClick(View view) {
                     final User temp = userList.get(position);
                     final String param = "?uid="+temp.getUid()+"&tid="+tid;
-                    int shareMode = temp.getShareMode();
                     final JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("shareMode", shareMode);
+                        // Revoke will set the mode to view only
+                        jsonObject.put("shareMode", TSContract.ShareEntry.MODE_VIEWONLY);
                         jsonObject.put("shareStatus", TSContract.ShareEntry.STATUS_REVOKED);
                     } catch (JSONException e) {
                         e.printStackTrace();

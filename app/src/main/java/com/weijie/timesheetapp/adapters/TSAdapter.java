@@ -36,13 +36,15 @@ public class TSAdapter extends ArrayAdapter<Object> {
     private boolean[] isChecked;
     boolean showCheckbox;
     Context context;
+    private long currentUID;
 
-    public TSAdapter(Context context, List<Object> list, boolean showCheckbox) {
+    public TSAdapter(Context context, List<Object> list, boolean showCheckbox, long uid) {
         super(context, R.layout.single_row_ts, list);
         this.context = context;
         tslist = list;
         this.showCheckbox = showCheckbox;
         isChecked = new boolean[tslist.size()];
+        this.currentUID = uid;
     }
 
     //get selected tids to generate summary
@@ -135,6 +137,7 @@ public class TSAdapter extends ArrayAdapter<Object> {
                             intent.putExtra("TID", tid);
                             intent.putExtra("mode", mode);
                             intent.putExtra("status", status);
+                            intent.putExtra("UID", currentUID);
                             context.startActivity(intent);
                         }
                     });

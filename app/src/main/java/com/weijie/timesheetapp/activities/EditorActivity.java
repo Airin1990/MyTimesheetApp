@@ -43,6 +43,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     int editMode = 0;
     private int mode;
     String record_ID;
+    long currentTID;
 
     DatePickerDialog mDatePicker;
     TimePickerDialog mTimePicker;
@@ -82,6 +83,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         comments = (EditText) findViewById(R.id.comment_edit);
 
         mode = getIntent().getIntExtra("mode", TSContract.ShareEntry.MODE_EDIT);
+        currentTID = getIntent().getLongExtra("TID", 0);
 
         if (mode != TSContract.ShareEntry.MODE_VIEWONLY) {
             setTitle("Edit Mode");
@@ -127,7 +129,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                     jsonObject.put("break_time", toMins(break_time.getText().toString()));
                     jsonObject.put("work_time", toMins(work_time.getText().toString()));
                     jsonObject.put("is_weekend", 0);
-                    jsonObject.put("tid", 1299);
+                    jsonObject.put("tid", currentTID);
                     jsonObject.put("comments", comments.getText().toString());
                 }
                 catch (JSONException e) {

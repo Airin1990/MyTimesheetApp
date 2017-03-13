@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -103,11 +104,10 @@ public class HomepageActivity extends AppCompatActivity
         }
 
         listView = (ListView) findViewById(R.id.homepage_list);
-
-        View emptyView = getLayoutInflater().inflate(R.layout.empty_listview, null);
-        addContentView(emptyView, listView.getLayoutParams());
+        ViewGroup parentGroup = (ViewGroup)listView.getParent();
+        View emptyView = getLayoutInflater().inflate(R.layout.empty_listview, parentGroup, false);
+        parentGroup.addView(emptyView);
         listView.setEmptyView(emptyView);
-
     }
 
     private boolean ObtainUserInfo() {
@@ -310,7 +310,7 @@ public class HomepageActivity extends AppCompatActivity
                             adapterList.addAll(list3);
                         }
 
-                        tsAdapter = new TSAdapter(HomepageActivity.this, adapterList, showCheckbox);
+                        tsAdapter = new TSAdapter(HomepageActivity.this, adapterList, showCheckbox, userId);
                         listView.setAdapter(tsAdapter);
 
                     }
@@ -383,7 +383,7 @@ public class HomepageActivity extends AppCompatActivity
             return true;
         } else if (id == R.id.action_multi_select) {
             showCheckbox = !showCheckbox;
-            tsAdapter = new TSAdapter(this, adapterList, showCheckbox);
+            tsAdapter = new TSAdapter(this, adapterList, showCheckbox, userId);
             listView.setAdapter(tsAdapter);
             if (showCheckbox) {
                 fab.setImageResource(R.drawable.ic_assignment_white_24dp);

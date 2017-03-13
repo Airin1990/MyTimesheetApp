@@ -74,10 +74,17 @@
                 android:id="@+id/spinner" />
 
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_upward_black_24dp" />
+            <ToggleButton
+                android:id="@+id/toggleButton"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@android:color/holo_green_dark"
+                android:textStyle="bold"
+                android:textOn="\u21E9"
+                android:textOff="\u21E7"
+                android:background="@android:color/transparent"
+                />
 
         </LinearLayout>
     </LinearLayout>

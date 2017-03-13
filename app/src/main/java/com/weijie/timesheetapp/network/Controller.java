@@ -18,6 +18,7 @@ public class Controller {
     private static final String USER_URL = "/users";
     private static final String SHARE_URL = "/shares";
     private static final String SUMMARY_URL = "/summary";
+    private static final String REVOKE_URL = "/records/revoked";
 
     public class Action {
         public static final int DISPLAY_RECORD_LIST = 1001;
@@ -27,6 +28,7 @@ public class Controller {
         public static final int GET_USER_PROFILE = 1005;
         public static final int GET_USER_SHARE_STATUS = 1006;
         public static final int GET_SHARE_USER_LIST = 1007;
+        public static final int DISPLAY_REVOKE_RECORDS = 1008;
 
         public static final int INSERT_RECORD = 2001;
         public static final int INSERT_NEW_TS = 2002;
@@ -42,6 +44,7 @@ public class Controller {
         public static final int DELETE_TIMESHEET = 4002;
         public static final int DELETE_USER = 4003;
         public static final int DELETE_SHARE = 4004;
+
     }
 
     public static Response AppEvent (int action, String param, JSONObject json) {
@@ -49,7 +52,7 @@ public class Controller {
         Response resp = null;
         switch (action) {
             case Action.DISPLAY_RECORD_LIST:
-                resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + RECORD_URL);
+                resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + RECORD_URL + param);
                 break;
             case Action.DISPLAY_TS_LIST:
                 resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + SHEET_URL + param);
@@ -65,6 +68,9 @@ public class Controller {
                 break;
             case Action.GET_SHARE_USER_LIST:
                 resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + SHEET_URL+ param);
+                break;
+            case Action.DISPLAY_REVOKE_RECORDS:
+                resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + REVOKE_URL + param);
                 break;
             case Action.INSERT_RECORD:
                 resp = MyApplication.getInstance().getHttpGateway().doPost(BASE_URL + RECORD_URL, param, json);

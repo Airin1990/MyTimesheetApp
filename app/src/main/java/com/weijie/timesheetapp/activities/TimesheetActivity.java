@@ -23,11 +23,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -71,6 +73,7 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
     private static final int RECORD_LOADER = 0;
     private boolean shouldExecuteOnResume;
     private long currentTID;
+    private long currentUID;
     private List<User> userList;
     private int mode;
     private int status;
@@ -78,6 +81,7 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
     RecordCursorAdapter mRecordCursorAdapter;
     ListView listView;
     Spinner spinner;
+    ToggleButton toggleButton;
     android.support.v7.app.AlertDialog dialog;
     ProgressDialog loading;
     ListView userlv;
@@ -103,12 +107,14 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
                 Intent intent = new Intent(getApplicationContext(), EditorActivity.class);
                 // mode = 1 if insertion, mode = 0 if update
                 intent.putExtra("mode",1);
+                intent.putExtra("TID", currentTID);
                 startActivity(intent);
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         currentTID = getIntent().getLongExtra("TID", 0);
+        currentUID = getIntent().getLongExtra("UID", 0);
         Log.d(TAG, ""+currentTID);
         mode = getIntent().getIntExtra("mode", TSContract.ShareEntry.MODE_EDIT);
         status = getIntent().getIntExtra("status", TSContract.ShareEntry.STATUS_ACCEPTED);
@@ -134,6 +140,7 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
         getLoaderManager().initLoader(RECORD_LOADER, null, this);
 
         spinner = (Spinner) findViewById(R.id.spinner);
+        toggleButton = (ToggleButton) findViewById(R.id.toggleButton);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -146,25 +153,26 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
                         TSContract.RecordEntry.COLUMN_COMMENTS,
                         TSContract.RecordEntry.COLUMN_TID};
                 Cursor c;
+                String scd = toggleButton.isChecked() ? " DESC":" ASC";
                 switch (i) {
                     case 1:
-                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_DATE + " DESC");
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_DATE + scd);
                         mRecordCursorAdapter.changeCursor(c);
                         break;
                     case 2:
-                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_START_TIME + " DESC");
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_START_TIME + scd);
                         mRecordCursorAdapter.changeCursor(c);
                         break;
                     case 3:
-                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_END_TIME + " DESC");
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_END_TIME + scd);
                         mRecordCursorAdapter.changeCursor(c);
                         break;
                     case 4:
-                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_BREAK + " DESC");
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_BREAK + scd);
                         mRecordCursorAdapter.changeCursor(c);
                         break;
                     case 5:
-                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_WORK_TIME + " DESC");
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_WORK_TIME + scd);
                         mRecordCursorAdapter.changeCursor(c);
                         break;
                     case 0: default:
@@ -177,6 +185,48 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
+            }
+        });
+
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                String scd = b ? " DESC":" ASC";
+                String[] projection = {TSContract.RecordEntry.COLUMN_RID+ " as "+ BaseColumns._ID,
+                        TSContract.RecordEntry.COLUMN_DATE,
+                        TSContract.RecordEntry.COLUMN_START_TIME,
+                        TSContract.RecordEntry.COLUMN_END_TIME,
+                        TSContract.RecordEntry.COLUMN_BREAK,
+                        TSContract.RecordEntry.COLUMN_WORK_TIME,
+                        TSContract.RecordEntry.COLUMN_COMMENTS,
+                        TSContract.RecordEntry.COLUMN_TID};
+                Cursor c;
+                switch (spinner.getSelectedItemPosition()) {
+                    case 1:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_DATE + scd);
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                    case 2:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_START_TIME + scd);
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                    case 3:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_END_TIME + scd);
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                    case 4:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_BREAK + scd);
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                    case 5:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, TSContract.RecordEntry.COLUMN_WORK_TIME + scd);
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                    case 0: default:
+                        c = getContentResolver().query(TSContract.RecordEntry.CONTENT_URI, projection, null, null, null);
+                        mRecordCursorAdapter.changeCursor(c);
+                        break;
+                }
             }
         });
 
@@ -199,11 +249,19 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
             @Override
             public void run() {
                 try {
-                    Response resp = AppEvent(Controller.Action.DISPLAY_RECORD_LIST,"",null);
+
+                    Response resp = null;
+                    if (status != TSContract.ShareEntry.STATUS_REVOKED) {
+                        resp = AppEvent(Controller.Action.DISPLAY_RECORD_LIST, "?tid=" + currentTID, null);
+                    } else {
+                        resp = AppEvent(Controller.Action.DISPLAY_REVOKE_RECORDS, "?tid=" + currentTID +"&uid=" + currentUID, null);
+                    }
 
                     Type type = new TypeToken<List<Record>>(){}.getType();
 
                     String json = resp.body().string();
+
+                    Log.d(TAG, json);
 
                     SqlDateTypeAdapter sqlAdapter = new SqlDateTypeAdapter();
 
@@ -267,7 +325,6 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
                     }
                     getContentResolver().bulkInsert(TSContract.RecordEntry.CONTENT_URI, valueList);
 
-                    Log.d(TAG,fromJson.get(0)+":"+String.valueOf(fromJson.size()));
                     TimesheetActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -563,6 +620,7 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
         intent.putExtra("b",c.getInt(c.getColumnIndex(TSContract.RecordEntry.COLUMN_BREAK)));
         intent.putExtra("w",c.getInt(c.getColumnIndex(TSContract.RecordEntry.COLUMN_WORK_TIME)));
         intent.putExtra("c",c.getString(c.getColumnIndex(TSContract.RecordEntry.COLUMN_COMMENTS)));
+        intent.putExtra("TID", currentTID);
         startActivity(intent);
 
     }
