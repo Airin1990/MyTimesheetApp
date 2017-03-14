@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.weijie.timesheetapp.R;
 import com.weijie.timesheetapp.activities.TimesheetActivity;
+import com.weijie.timesheetapp.database.TSContract;
 import com.weijie.timesheetapp.models.Timesheet;
 
 import java.util.ArrayList;
@@ -48,13 +49,22 @@ public class TSAdapter extends ArrayAdapter<Object> {
     }
 
     //get selected tids to generate summary
-    public List<Long> getSelectedTIDs() {
-        List<Long> tids = new ArrayList<>();
+    public List<List<Long>> getSelectedTIDs() {
+        List<List<Long>> tids = new ArrayList<>();
+        List<Long> stids = new ArrayList<>();
+        List<Long> rtids = new ArrayList<>();
         for (int i = 0; i < tslist.size(); i++) {
             if (isChecked[i]) {
-                tids.add(((Timesheet)tslist.get(i)).getTID());
+                if (((Timesheet)tslist.get(i)).getShareStatus() == TSContract.ShareEntry.STATUS_REVOKED)
+                    rtids.add(((Timesheet)tslist.get(i)).getTID());
+                else {
+                    stids.add(((Timesheet)tslist.get(i)).getTID());
+                }
             }
         }
+        tids.add(stids);
+        tids.add(rtids);
+
         return tids;
     }
 

@@ -81,8 +81,15 @@ public class HomepageActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (showCheckbox) {
-                    Toast.makeText(getApplicationContext(), "The selected TIDs are:" + tsAdapter.getSelectedTIDs(), Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getApplicationContext(), SummaryActivity.class);
+                    if (tsAdapter.getSelectedTIDs().get(0).isEmpty() &&
+                            tsAdapter.getSelectedTIDs().get(1).isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "Please at least select one timesheet!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    intent.putExtra("stids", ParseIDtoString(tsAdapter.getSelectedTIDs().get(0)));
+                    intent.putExtra("rtids", ParseIDtoString(tsAdapter.getSelectedTIDs().get(1)));
+                    intent.putExtra("uid", userId);
                     startActivity(intent);
                 } else {
                     showCreateTimesheetDialog();
@@ -108,6 +115,15 @@ public class HomepageActivity extends AppCompatActivity
         View emptyView = getLayoutInflater().inflate(R.layout.empty_listview, parentGroup, false);
         parentGroup.addView(emptyView);
         listView.setEmptyView(emptyView);
+    }
+
+    private String ParseIDtoString(List<Long> idlist) {
+        String idstr = "";
+        for (int i = 0; i < idlist.size(); i++) {
+            if (i == 0) idstr += String.valueOf(idlist.get(i));
+            else idstr += "," + String.valueOf(idlist.get(i));
+        }
+        return idstr;
     }
 
     private void showCreateTimesheetDialog() {

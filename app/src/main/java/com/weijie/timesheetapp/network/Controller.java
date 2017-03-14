@@ -60,6 +60,7 @@ public class Controller {
             case Action.GET_SHARE_TS_LIST:
                 break;
             case Action.GET_SUMMARY:
+                resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + SUMMARY_URL + param);
                 break;
             case Action.GET_USER_PROFILE:
                 resp = MyApplication.getInstance().getHttpGateway().doGet(BASE_URL + USER_URL + param);
