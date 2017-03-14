@@ -76,6 +76,7 @@ public class Controller {
                 resp = MyApplication.getInstance().getHttpGateway().doPost(BASE_URL + RECORD_URL, param, json);
                 break;
             case Action.INSERT_NEW_TS:
+                resp = MyApplication.getInstance().getHttpGateway().doPost(BASE_URL + SHEET_URL, param, json);
                 break;
             case Action.ADD_NEW_USER:
                 resp = MyApplication.getInstance().getHttpGateway().doPost(BASE_URL + USER_URL, param, json);

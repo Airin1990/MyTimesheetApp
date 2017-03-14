@@ -42,6 +42,7 @@
     <string name="edit">Edit</string>
     <string name="edit_ts_msg">Rename your timesheet</string>
     <string name="action_select">\u2611\u0009\u0009Select</string>
+    <string name="action_refresh">\u21BB\u0009\u0009Refresh</string>
     <string name="action_log_out">Log Out</string>
     <string name="error_weak_password">The password is too weak</string>
     <string name="error_user_exists">The user already exists</string>
@@ -49,4 +50,5 @@
     <string name="error_password_length">Password length (6~12)</string>
     <string name="error_mismatch_password">Password Must Match</string>
     <string name="error_user_not_exists">This email does not exists</string>
+    <string name="empty_text">Name cannot be empty</string>
 </resources>

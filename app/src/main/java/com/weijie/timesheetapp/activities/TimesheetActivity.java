@@ -119,11 +119,11 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
         mode = getIntent().getIntExtra("mode", TSContract.ShareEntry.MODE_EDIT);
         status = getIntent().getIntExtra("status", TSContract.ShareEntry.STATUS_ACCEPTED);
 
+        setTitle(getIntent().getStringExtra("sheetName"));
+
         if (mode != TSContract.ShareEntry.MODE_VIEWONLY) {
-            setTitle("Edit Timesheet");
             fab.setVisibility(View.VISIBLE);
         } else {
-            setTitle("View Only Mode");
             fab.setVisibility(View.GONE);
         }
 

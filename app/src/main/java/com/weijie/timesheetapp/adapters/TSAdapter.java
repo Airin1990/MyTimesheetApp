@@ -134,10 +134,12 @@ public class TSAdapter extends ArrayAdapter<Object> {
                             long tid = data.getTID();
                             int mode = data.getShareMode();
                             int status = data.getShareStatus();
+                            String tName = data.getName();
                             intent.putExtra("TID", tid);
                             intent.putExtra("mode", mode);
                             intent.putExtra("status", status);
                             intent.putExtra("UID", currentUID);
+                            intent.putExtra("sheetName", tName);
                             context.startActivity(intent);
                         }
                     });

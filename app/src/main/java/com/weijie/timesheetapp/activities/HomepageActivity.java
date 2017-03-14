@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -84,8 +85,7 @@ public class HomepageActivity extends AppCompatActivity
                     Intent intent = new Intent(getApplicationContext(), SummaryActivity.class);
                     startActivity(intent);
                 } else {
-                    Intent intent = new Intent(getApplicationContext(), TimesheetActivity.class);
-                    startActivity(intent);
+                    showCreateTimesheetDialog();
                 }
             }
         });
@@ -108,6 +108,71 @@ public class HomepageActivity extends AppCompatActivity
         View emptyView = getLayoutInflater().inflate(R.layout.empty_listview, parentGroup, false);
         parentGroup.addView(emptyView);
         listView.setEmptyView(emptyView);
+    }
+
+    private void showCreateTimesheetDialog() {
+        View view = getLayoutInflater().inflate(R.layout.dialog_add_ts, null);
+        final AlertDialog ts_dialog = new AlertDialog.Builder(this, R.style.AppTheme_CustomDialog)
+                .setView(view)
+                .create();
+        ts_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        final EditText newName = (EditText) view.findViewById(R.id.new_ts_name);
+        FancyButton addBt = (FancyButton) view.findViewById(R.id.add_ts_bt);
+        FancyButton cancelBt = (FancyButton) view.findViewById(R.id.cancel_ts_bt);
+
+        addBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String name = newName.getText().toString();
+                if (name.isEmpty()) {
+                    newName.setError(getString(R.string.empty_text));
+                } else {
+
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put("tName", name);
+                                jsonObject.put("uid", userId);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            Response resp = Controller.AppEvent(Controller.Action.INSERT_NEW_TS, "", jsonObject);
+                            JSONObject resp_json = null;
+                            try {
+                                String json = resp.body().string();
+                                resp_json = new JSONObject(json);
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            Intent intent = new Intent(getApplicationContext(), TimesheetActivity.class);
+                            try {
+                                intent.putExtra("TID", resp_json.getLong("tid"));
+                                intent.putExtra("sheetName", name);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            ts_dialog.dismiss();
+                            startActivity(intent);
+                        }
+                    });
+                    thread.start();
+                }
+            }
+        });
+
+        cancelBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ts_dialog.dismiss();
+            }
+        });
+
+        ts_dialog.show();
     }
 
     private boolean ObtainUserInfo() {
@@ -381,6 +446,8 @@ public class HomepageActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_refresh) {
+          populateTimesheetInfo();
         } else if (id == R.id.action_multi_select) {
             showCheckbox = !showCheckbox;
             tsAdapter = new TSAdapter(this, adapterList, showCheckbox, userId);
