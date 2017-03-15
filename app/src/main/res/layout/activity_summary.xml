@@ -69,10 +69,14 @@
                 android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:id="@+id/sum_key1" />
+
+
             <TextView
+                android:layout_marginLeft="10dp"
                 android:text="Week 1: 40 hours\nWeek 2: 40 hours\nWeek 3: 40 hours\nWeek 4: 40 hours\nWeek 5: 40 hours\nWeek 6: 40 hours\nTotal: 40 hours/week"
                 android:textStyle="bold|italic"
                 android:layout_width="0dp"
+                android:gravity="center_vertical"
                 android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:id="@+id/sum_val1" />
@@ -91,9 +95,11 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/sum_key2" />
             <TextView
+                android:layout_marginLeft="10dp"
                 android:text="Week 1: 40 hours\nWeek 2: 40 hours\nWeek 3: 40 hours\nWeek 4: 40 hours\nWeek 5: 40 hours\nWeek 6: 40 hours\nTotal: 40 hours/week"
                 android:textStyle="bold|italic"
                 android:layout_width="0dp"
+                android:gravity="center_vertical"
                 android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:id="@+id/sum_val2" />
@@ -113,6 +119,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/sum_key3" />
             <TextView
+                android:layout_marginLeft="10dp"
                 android:text="Total: 100 hours\nAverage: 10 hours"
                 android:textStyle="bold|italic"
                 android:lines="2"
@@ -135,11 +142,12 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/sum_key4" />
             <TextView
+                android:layout_marginLeft="10dp"
                 android:text="Month 1: 160 hours\nMonth 2: 200 hours\nMonth 3: 180 hours\nAverage: 180 hours/Month"
                 android:textStyle="bold|italic"
                 android:layout_width="0dp"
+                android:gravity="center_vertical"
                 android:layout_weight="3"
-                android:lines="4"
                 android:layout_height="wrap_content"
                 android:id="@+id/sum_val4" />
         </TableRow>

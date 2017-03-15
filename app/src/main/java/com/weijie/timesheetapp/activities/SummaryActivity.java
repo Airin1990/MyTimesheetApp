@@ -118,14 +118,13 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
                         Log.v(TAG, temp.toString());
                         if (temp.optString("start", null) != null) {
                             val1 += temp.getString("start") +" ~ "+ temp.getString("end")+"\n";
-                            val1 += "Total: " +(temp.getInt("work_time")/60) + " hr " + (temp.getInt("work_time")%60)+ " min\n";
+                            val1 += "Total: " +(temp.getInt("work_time")/60) + "hr " + (temp.getInt("work_time")%60)+ "min\n";
                         }
                         else if (temp.optString("Average", null) != null){
-                            val1 += "Average: " + (temp.getInt("Average")/60) + " hr " + (temp.getInt("Average")%60)+ " min /week";
+                            val1 += "\nAverage: " + (temp.getInt("Average")/60) + "hr " + (temp.getInt("Average")%60)+ "min/week";
                         }
                     }
-                    if (val1.isEmpty()) val1 = "No Data";
-                    final String finalVal1 = val1;
+                    final String finalVal1 = val1.isEmpty() ? "No Data": val1;
 
                     JSONArray field2 = jsonObject.getJSONArray("weekday_summary");
                     String val2 = "";
@@ -134,20 +133,60 @@ public class SummaryActivity extends AppCompatActivity implements View.OnClickLi
                         Log.v(TAG, temp.toString());
                         if (temp.optString("start", null) != null) {
                             val2 += temp.getString("start") +" ~ "+ temp.getString("end")+"\n";
-                            val2 += "Total: " +(temp.getInt("work_time")/60) + " hr " + (temp.getInt("work_time")%60)+ " min\n";
+                            val2 += "Total: " +(temp.getInt("work_time")/60) + "hr " + (temp.getInt("work_time")%60)+ "min\n";
                         }
                         else if (temp.optString("Average", null) != null){
-                            val2 += "Average: " + (temp.getInt("Average")/60) + " hr " + (temp.getInt("Average")%60)+ " min /week";
+                            val2 += "\nAverage: " + (temp.getInt("Average")/60) + "hr " + (temp.getInt("Average")%60)+ "min/week";
                         }
                     }
-                    if (val2.isEmpty()) val2 = "No Data";
-                    final String finalVal2 = val2;
+                    final String finalVal2 = val2.isEmpty() ? "No Data" : val2;
+
+                    int field3 = jsonObject.getInt("weekend_total");
+                    int field4 = jsonObject.getInt("weekend_average");
+                    String val3 = "";
+                    if (field3 == -1 || field4 == -1) {
+                        val3 = "No Data";
+                    } else {
+                        val3 += "Total: " + field3 / 60 + "hr " + field3 % 60 + "min\n";
+                        val3 += "Average: " + field4 / 60 + "hr " + field4 % 60 + "min";
+                    }
+                    final String finalVal3 = val3;
+
+                    JSONArray field5 = jsonObject.getJSONArray("month_summary");
+                    String val4 = "";
+                    for (int i = 0; i < field5.length(); i++) {
+                        JSONObject temp = field5.getJSONObject(i);
+                        Log.v(TAG, temp.toString());
+                        if (temp.optString("month", null) != null) {
+                            val4 += temp.getString("month") +": "+ (temp.getInt("work_time")/60) + "hr " + (temp.getInt("work_time")%60)+ "min\n";
+                        }
+                        else if (temp.optString("Average", null) != null){
+                            val4 += "\nAverage: " + (temp.getInt("Average")/60) + "hr " + (temp.getInt("Average")%60)+ "min/month";
+                        }
+                    }
+                    final String finalVal4 = val4.isEmpty() ? "No Data" : val4;
+
+                    int field6 = jsonObject.getInt("average_hours_per_day");
+                    int field7 = jsonObject.getInt("average_break_per_day");
+                    String field8 = jsonObject.getString("last_day_updated");
+                    int field9 = jsonObject.getInt("number_of_days_since_last_update");
+
+                    final String val5 = field6/60 + "hr " + field6%60 +"min";
+                    final String val6 = field7/60 + "hr " + field7%60 +"min";
+                    final String val7 = field8.isEmpty()? "No Data":field8;
+                    final String val8 = field9 >= 0? String.valueOf(field9) +" days":"No Data";
 
                     SummaryActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             sum1.setText(finalVal1);
                             sum2.setText(finalVal2);
+                            sum3.setText(finalVal3);
+                            sum4.setText(finalVal4);
+                            sum5.setText(val5);
+                            sum6.setText(val6);
+                            sum7.setText(val7);
+                            sum8.setText(val8);
                         }
                     });
 
