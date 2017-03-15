@@ -47,7 +47,7 @@
     <string name="error_weak_password">The password is too weak</string>
     <string name="error_user_exists">The user already exists</string>
     <string name="error_wrong_name">Invalid name</string>
-    <string name="error_password_length">Password length (6~12)</string>
+    <string name="error_password_length">Password length (6~25)</string>
     <string name="error_mismatch_password">Password Must Match</string>
     <string name="error_user_not_exists">This email does not exists</string>
     <string name="empty_text">Name cannot be empty</string>

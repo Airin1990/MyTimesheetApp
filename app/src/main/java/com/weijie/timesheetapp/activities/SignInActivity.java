@@ -192,7 +192,7 @@ public class SignInActivity extends AppCompatActivity {
             mEmail.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 6 || password.length() > 12) {
+        if (password.isEmpty() || password.length() < 6 || password.length() > 25) {
             mPassword.setError(getString(R.string.error_password_length));
             valid = false;
         }

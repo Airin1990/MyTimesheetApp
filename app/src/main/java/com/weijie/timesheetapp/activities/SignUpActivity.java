@@ -172,7 +172,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             lastname.setError(null);
         }
 
-        if (pass.isEmpty() || pass.length() < 6 || pass.length() > 12) {
+        if (pass.isEmpty() || pass.length() < 6 || pass.length() > 25) {
             password1.setError(getString(R.string.error_password_length));
             valid = false;
         }
@@ -180,7 +180,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             password1.setError(null);
         }
 
-        if (pass_conf.isEmpty() || pass.length() < 6 || pass_conf.length() > 12) {
+        if (pass_conf.isEmpty() || pass.length() < 6 || pass_conf.length() > 25) {
             password2.setError(getString(R.string.error_password_length));
             valid = false;
         }

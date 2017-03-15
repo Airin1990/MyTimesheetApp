@@ -153,6 +153,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                             }
                             else {
                                 Toast.makeText(getApplicationContext(), "Record upadted!", Toast.LENGTH_LONG).show();
+                                EditorActivity.this.finish();
                             }
                         }
                     });
@@ -160,6 +161,12 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
         schedule.start();
+
+        try {
+            schedule.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void populateDefaultValue() {

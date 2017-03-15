@@ -329,7 +329,11 @@ public class TimesheetActivity extends AppCompatActivity implements LoaderManage
                         @Override
                         public void run() {
                             listView.setVisibility(View.VISIBLE);
+                            //To trigger loading
+                            toggleButton.setChecked(!toggleButton.isChecked());
+                            toggleButton.setChecked(!toggleButton.isChecked());
                             loading.dismiss();
+
                         }
                     });
 
